@@ -1,0 +1,77 @@
+Implémentation des environnements par des listes.
+Ou bien par des fonctions.
+  (Implémentation canonique: l'environnement est sa propre fonction lookup.)
+  (Interdit toutefois l'induction sur les environnements. Pas grave?)
+  (Avantage: la fonction insert est plus naturelle, pas besoin de restreindre
+   la position où a lieu l'insertion à être contiguë à la liste existante.)
+  (Inconvénient: on risque d'avoir besoin de l'égalité extensionnelle.)
+
+Le cas de Système F, où les variables de types ne sont pas liées du tout
+dans l'environnement, revient à extruder gloutonnement ces liaisons.
+
+Le fait que les infos I dépendent ou non des variables (de diverses sortes)
+peut être indiqué par le fait que lift/subst sont l'identité ou non. Le
+problème, c'est qu'il faudrait pouvoir distinguer plusieurs sortes de
+variables... chez moi tout est nat. Bah, il suffit d'indiquer de quelle
+instance de lift et subst on parle?
+
+Quelles sont les opérations fournies par un environnement de type E qui aux
+variables associe des informations de type I?
+
+  empty: E
+
+  bind: nat -> I -> E -> E
+  -- bind x i e insère une nouvelle variable, à la position x, avec l'info i
+  -- si les infos dépendent des variables, il faut lifter les infos plus récentes
+  -- on peut aussi l'appeler weaken, insert, ...
+  -- on peut avoir remove qui fait l'inverse de insert, mais on peut s'en passer?
+  -- en fait, remove c'est subst
+
+  lookup: nat -> E -> option I
+  -- lookup x e consulte l'info associée à la variable x
+  -- si les infos dépendent des variables, il faut lifter à la remontée
+
+  subst: J -> nat -> E -> E
+  -- subst j x e remplace la variable x par l'information j
+  -- la substitution est faite dans les infos associées aux variables plus récentes que x
+  -- cela suppose qu'on puisse remplacer les variables par des J dans les I, i.e. Subst J I
+
+  map: (I -> I) -> E -> E
+
+Quelles propriétés?
+
+  lookup x (bind y i e) = i                              si x = y
+                        = shift y (lookup x e)           si x < y
+                        = shift y (lookup (x - 1) e)     si x > y
+  -- définir shift sur les options
+
+  commutation bind/bind
+  bind x i (bind y j e) = ...
+
+  commutation bind/subst
+  bind x i (subst j y e) = ...
+
+  lookup/lift
+  lookup (shift y x) (bind y i e) = shift y (lookup x e)
+
+  lookup/subst
+  lookup (subst v k x) ? = ?
+  -- équivalent de jenv_substitution?
+
+  lookup x (subst j y e) = subst j y (lookup x e)        si x < y
+                         = lookup (1 + x) e              sinon
+  -- définir subst sur les options
+
+  lookup x (map f e)     = map f (lookup f e)
+  -- définir map sur les options
+
+  commutation map/bind
+  map f (bind x i e) = bind x (f i) (map f e)
+
+Quid quand le domaine de l'environnement contient plusieurs sortes de
+variables? Quid quand les informations I contiennent elles-mêmes des
+variables?
+
+Un environnement est une sorte de zipper. Peut-on faire quelque chose de
+général sur les zippers?
+

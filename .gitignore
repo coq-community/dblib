@@ -1,0 +1,14 @@
+*.glob
+*.vo
+*.v.d
+_shadow
+coqj
+coqj.ml
+*.tex
+coq2html
+coq2html.ml
+*.html
+coq2index
+coq2index.ml
+targets
+cores

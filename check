@@ -1,0 +1,5 @@
+#!/bin/sh
+
+rm -f targets
+echo _shadow/$1vo $1vo > targets
+make targets

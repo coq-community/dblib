@@ -1,0 +1,38 @@
+/* Classes:
+     h1           unit names
+     div.entry    index entries
+     div.path     index entry: left part
+     div.sources  index entry: right part
+*/
+
+body {
+  color: black;
+  background: white;
+}
+
+h1 {
+  font-size: 1.3em;
+}
+
+div.entry {
+  width: 100%;
+  clear: both;
+}
+
+span.path {
+  width: 30%;
+  font-family: monospace;
+  float: left;
+  overflow: hidden;
+}
+
+span.sources {
+  width: 70%;
+  float: right;
+}
+
+a:visited { color : #416DFF; text-decoration : none; }
+a:link { color : #416DFF; text-decoration : none; }
+a:hover { text-decoration : none; }
+a:active { text-decoration : none; }
+
