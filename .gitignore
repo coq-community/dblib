@@ -12,3 +12,6 @@ coq2index
 coq2index.ml
 targets
 cores
+*.cmi
+*.cmx
+*.o
