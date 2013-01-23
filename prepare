@@ -5,13 +5,14 @@
 # We remove any leading ".v" or "." suffix, so it is OK if the filename ends
 # in ".v", ".", or has no extension at all.
 
-# Here, we rebuild just this module.
+# Here, we rebuild just the shadow files that are needed in order to work on
+# this module in Proof General.
 
-# See also the script "./prepare".
+# See also the script "./check".
 
 BASENAME=`basename $1 .v`
 BASENAME=`basename $BASENAME .`
 rm -f targets
-echo $BASENAME.vo > targets
+echo _shadow/$BASENAME.vo > targets
 make targets
 rm -f targets
