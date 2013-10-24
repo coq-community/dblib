@@ -140,6 +140,21 @@ Qed.
 
 (* ---------------------------------------------------------------------------- *)
 
+(* The tactic [introq] introduces all of the universal quantifiers that appear
+   at the head of the goal. *)
+
+Ltac introq :=
+  match goal with
+  | |- ?P -> ?Q =>
+      idtac
+  | |- forall _, _ =>
+      intro; introq
+  | |- _ =>
+      idtac
+  end.
+
+(* ---------------------------------------------------------------------------- *)
+
 (* The typing judgement of System F. *)
 
 (* The judgement is indexed by the height of the type derivation. Only the
@@ -171,7 +186,6 @@ Inductive j : nat -> env ty -> term -> ty -> Prop :=
       (* an explicit equality facilitates the use of this axiom by [eauto] *)
       subst U 0 T = U' -> 
       j n E t U'.
-  (* TEMPORARY JTyApp should become a subtyping rule in the future *)
 
 Hint Constructors j : j.
 
@@ -188,20 +202,6 @@ Lemma j_index_monotonic:
 Proof.
   induction 1; eauto with j omega.
 Qed.
-
-(* [introq] introduces all of the universal quantifiers that appear at
-   the head of the goal. *)
-
-Ltac introq :=
-  match goal with
-  | |- ?P -> ?Q =>
-      idtac
-  | |- forall _, _ =>
-      intro; introq
-  | |- _ =>
-      idtac
-  end.
-(* TEMPORARY *)
 
 (* ---------------------------------------------------------------------------- *)
 
@@ -272,6 +272,29 @@ Proof.
   with simpl_subst_goal lift_subst subst_subst map_insert.
 Qed.
 
+Lemma inversion_JAbs:
+  forall E t T1 T2,
+  j 0 E (TAbs t) (TyArrow T1 T2) ->
+  exists m,
+  j m (insert 0 T1 E) t T2.
+Proof.
+  introq. intro h. dependent destruction h; try solve [ omega ].
+  (* JAbs *)
+  eexists. eassumption.
+Qed.
+
+Lemma inversion_JTyAbs:
+  forall E t T,
+  j 0 E (TAbs t) (TyForall T) ->
+  (* We require a lambda-abstraction, so as to eliminate the cases where
+     we have a variable or an application, which we cannot deal with. *)
+  j 0 (map (shift 0) E) (TAbs t) T.
+Proof.
+  introq. intro h. dependent destruction h; try solve [ omega ].
+  (* JTyAbs *)
+  assumption.
+Qed.
+
 (* The following lemma looks like an inversion of [JTyAbs], but it
    is not truly one, because it is proved by applying weakening and
    [JTyApp], hence increasing the height of the derivation by one. *)
@@ -286,35 +309,6 @@ Proof.
   eapply JTyApp; [ | eauto | eauto ].
   eapply type_weakening; [ eauto | eauto | ].
   simpl_lift_goal. eauto.
-Qed.
-
-Lemma inversion_JAbs:
-  forall E t T1 T2,
-  j 0 E (TAbs t) (TyArrow T1 T2) ->
-  exists m,
-  j m (insert 0 T1 E) t T2.
-Proof.
-  introq. intro h. dependent destruction h.
-  (* JAbs *)
-  eexists. eassumption.
-  (* JTyApp *)
-  (* Impossible. *)
-  omega.
-Qed.
-
-Lemma inversion_JTyAbs:
-  forall E t T,
-  j 0 E (TAbs t) (TyForall T) ->
-  (* We require a lambda-abstraction, so as to eliminate the cases where
-     we have a variable or an application, which we cannot deal with. *)
-  j 0 (map (shift 0) E) (TAbs t) T.
-Proof.
-  introq. intro h. dependent destruction h.
-  (* JTyAbs *)
-  assumption.
-  (* JTyApp *)
-  (* Impossible. *)
-  omega.
 Qed.
 
 Lemma canonicalization:
@@ -342,6 +336,11 @@ Lemma type_preservation:
   red t1 t2 ->
   exists n,
   j n E t2 T.
+(* A local tactic to recognize and apply the induction hypothesis. *)
+Ltac tp_ih :=
+  match goal with ih: forall _, red _ _ -> _, hr: red _ _ |- _ =>
+    generalize (ih _ hr); intros [ ? ? ]
+  end.
 Proof.
   (* By induction on the type derivation. *)
   induction 1; intros ? hred.
@@ -349,32 +348,20 @@ Proof.
   dependent destruction hred.
   (* JAbs *)
   dependent destruction hred.
-  generalize (IHj _ hred); intros [ i ? ]. eauto using (JAbs 0).
+  tp_ih. eauto using (JAbs 0).
   (* JApp *)
   dependent destruction hred.
   (* Sub-case: beta-reduction. *)
-  generalize (inversion_JAbs (canonicalization H)); intros [ i ? ].
+  match goal with h: j _ _ (TAbs _) (TyArrow _ _) |- _ =>
+    generalize (inversion_JAbs (canonicalization h)); intros [ ? ? ]
+  end.
   solve [ eauto using term_substitution ].
   (* Sub-cases: reduction under a context. *)
-  generalize (IHj1 _ hred); intros [ i ? ]. eauto using (JApp 0).
-  generalize (IHj2 _ hred); intros [ i ? ]. eauto using (JApp 0).
+  tp_ih. eauto using (JApp 0).
+  tp_ih. eauto using (JApp 0).
   (* JTyAbs *)
-  generalize (IHj _ hred); intros [ i ? ]. eauto with j.
+  tp_ih. eauto with j.
   (* JTyApp *)
-  generalize (IHj _ hred); intros [ i ? ]. eauto with j.
-Qed.
-  (* TEMPORARY clean up *)
-(*
-  (* Solve the cases where it suffices to peel off a typing rule. *)
-  try solve [ eauto with j ].
-  (* Analyze the shape of the reduction step (hence, of [t1], too).
-     This kills some cases, where [t1] cannot reduce, e.g., because
-     it is a variable. This may also reveal (again) that it suffices
-     to peel off a typing rule (cases of reduction under a context). *)
-  dependent destruction hred;
-  try solve [ eauto with j ].
-  (* We are left with just one case, where [t1] is a beta-redex. *)
-  eauto using inversion_JAbs, term_substitution.
+  tp_ih. eauto with j.
 Qed.
 
-*)
