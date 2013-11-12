@@ -4,7 +4,7 @@
 # This Makefile is meant to be run sequentially.
 MAKEFLAGS := -j1
 
-.PHONY: all clean axioms wc shadow serious html export depend targets archive hamlet
+.PHONY: all clean axioms wc shadow serious html export depend targets archive mezzo
 
 # --------------------------------------------------------------------------------
 
@@ -135,7 +135,8 @@ html: all
 # [make archive] builds an archive of everything.
 
 DATE     := $(shell /bin/date +%Y%m%d)
-ARCHIVE  := dblib-$(DATE)
+NAME     := dblib
+ARCHIVE  := $(NAME)-$(DATE)
 
 archive: html
 	rm -rf $(ARCHIVE) $(ARCHIVE).tar.gz
@@ -151,17 +152,17 @@ archive: html
 # Export towards the Web site.
 
 SERVER := yquem.inria.fr
-WEBDIR := public_html/dblib
+WEBDIR := public_html/$(NAME)
 
 export: archive
 	ssh $(SERVER) "bash -c 'cd $(WEBDIR) && /bin/rm -f *.html'"
 	scp *.html *.css *.js $(ARCHIVE).tar.gz $(SERVER):$(WEBDIR)
-	ssh $(SERVER) "bash -c 'cd $(WEBDIR) && /bin/ln -sf $(ARCHIVE).tar.gz dblib.tar.gz'"
+	ssh $(SERVER) "bash -c 'cd $(WEBDIR) && /bin/ln -sf $(ARCHIVE).tar.gz $(NAME).tar.gz'"
 
-# Export towards the HaMLet development.
+# Export towards the Mezzo development.
 
-hamlet:
-	cp -f LibTactics.v MyTactics.v DeBruijn.v Environments.v $(HOME)/dev/hamlet/coq
+mezzo:
+	cp -f MyTactics.v DeBruijn.v Environments.v $(HOME)/dev/mezzo/coq
 
 # --------------------------------------------------------------------------------
 
