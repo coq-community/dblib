@@ -358,15 +358,15 @@ Qed.
 
 Ltac insert_insert :=
   first [
-    rewrite insert_insert by omega; reflexivity
-  | rewrite <- insert_insert by omega; reflexivity
+    rewrite    insert_insert; [ reflexivity | omega ]
+  | rewrite <- insert_insert; [ reflexivity | omega ]
   ].
 
-Hint Extern 1 (raw_insert _ _ (raw_insert _ _ _) = _) =>
+Hint Extern 1 (raw_insert _ _ _ = _) =>
   insert_insert
 : insert_insert.
 
-Hint Extern 1 (_ = raw_insert _ _ (raw_insert _ _ _)) =>
+Hint Extern 1 (_ = raw_insert _ _ _) =>
   insert_insert
 : insert_insert.
 
