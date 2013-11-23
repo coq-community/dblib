@@ -672,6 +672,20 @@ Definition mymax m n :=
 Ltac mymax :=
   unfold mymax in *; dblib_by_cases; try omega.
 
+Lemma mymax_l:
+  forall i j, mymax i j >= i.
+Proof. 
+  intros. mymax.
+Qed.
+
+Lemma mymax_r:
+  forall i j, mymax i j >= j.
+Proof. 
+  intros. mymax.
+Qed.
+
+Hint Resolve mymax_l mymax_r : mymax.
+
 (* Extending an environment increments its length by one, in the usual case.
    It can be extended by more than one if [x] is far away. *)
 
