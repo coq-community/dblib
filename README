@@ -6,6 +6,10 @@ LICENSE
 
 GNU GPL. See the file LICENSE.
 
+REQUIREMENTS
+
+Coq 8.4. (Tested with Coq 8.4pl2.)
+
 WHAT IS DBLIB?
 
 The dblib library offers facilities for working with de Bruijn indices in

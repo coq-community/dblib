@@ -138,7 +138,7 @@ DATE     := $(shell /bin/date +%Y%m%d)
 NAME     := dblib
 ARCHIVE  := $(NAME)-$(DATE)
 
-archive: html
+archive: # html
 	rm -rf $(ARCHIVE) $(ARCHIVE).tar.gz
 	mkdir $(ARCHIVE) && cp README LICENSE $(ARCHIVE)
 	mkdir $(ARCHIVE)/src && cp *.v Makefile.core $(ARCHIVE)/src
@@ -156,7 +156,8 @@ WEBDIR := public_html/$(NAME)
 
 export: archive
 	ssh $(SERVER) "bash -c 'cd $(WEBDIR) && /bin/rm -f *.html'"
-	scp *.html *.css *.js $(ARCHIVE).tar.gz $(SERVER):$(WEBDIR)
+	scp README $(ARCHIVE).tar.gz $(SERVER):$(WEBDIR)
+#	scp *.html *.css *.js $(SERVER):$(WEBDIR)
 	ssh $(SERVER) "bash -c 'cd $(WEBDIR) && /bin/ln -sf $(ARCHIVE).tar.gz $(NAME).tar.gz'"
 
 # Export towards the Mezzo development.
