@@ -47,7 +47,7 @@ Coq. The basic idea is as follows:
      lifting (and substitution), and provides lemmas/tactics for reasoning
      about this notion.
 
-Everything is based on type classes, so "traverse", "lift", "subst", etc.  are
+Everything is based on type classes: "traverse", "lift", "subst", etc. are
 overloaded, so the whole process can be repeated, if desired, for another
 inductive type.
 
