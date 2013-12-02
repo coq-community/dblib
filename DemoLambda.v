@@ -283,7 +283,7 @@ Lemma j_closed:
   forall E t T,
   j E t T ->
   forall k,
-  length E k ->
+  length E <= k ->
   closed k t.
 Proof.
   induction 1; intros; construction_closed.
@@ -296,8 +296,8 @@ Lemma j_agree:
   forall E1 t T,
   j E1 t T ->
   forall E2 k,
-  length E1 k ->
   agree E1 E2 k ->
+  length E1 <= k ->
   j E2 t T.
 Proof.
   induction 1; intros; eauto with j length agree omega.

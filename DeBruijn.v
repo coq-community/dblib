@@ -1337,7 +1337,6 @@ Ltac inversion_closed :=
    hypotheses are available. *)
 
 Hint Extern 1 => f_equal : construction_closed.
-Hint Extern 1 (_ = _ :> nat) => omega : construction_closed.
   (* more hints to be added later on into this database *)
 
 Ltac construction_closed :=
@@ -1351,7 +1350,7 @@ Ltac construction_closed :=
        [lift_idx] to simplify [shift] away. *)
     try (simpl; lift_idx);
     (* Conclude. *)
-    eauto with construction_closed
+    eauto with omega construction_closed
   ].
 
 (* The following hint proves a goal of the form [shift x v = v] when
@@ -1611,6 +1610,17 @@ Hint Extern 1 (_ = lift _ _ (lift _ _ _)) => lift_lift_fuse_hint : lift_lift_fus
 
 (* Miscellaneous lemmas, often combinations and/or special cases of the above
    lemmas. *)
+
+(* Lifts are invariant under translation. *)
+
+Lemma translate_lift:
+  forall w x y z,
+  lift w x y = z ->
+  forall k,
+  lift w (k + x) (k + y) = k + z.
+Proof.
+  just_do_it.
+Qed.
 
 (* The following is a simple consequence of [lift_fuse_fuse]. *)
 
