@@ -140,7 +140,7 @@ ARCHIVE  := $(NAME)-$(DATE)
 
 archive: html
 	rm -rf $(ARCHIVE) $(ARCHIVE).tar.gz
-#	mkdir $(ARCHIVE) && cp README Licence*.txt $(ARCHIVE)
+	mkdir $(ARCHIVE) && cp README LICENSE $(ARCHIVE)
 	mkdir $(ARCHIVE)/src && cp *.v Makefile.core $(ARCHIVE)/src
 #	cp Makefile.user $(ARCHIVE)/src/Makefile
 	echo "-j1" > $(ARCHIVE)/src/cores
