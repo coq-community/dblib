@@ -1,3 +1,11 @@
+AUTHOR
+
+François Pottier, INRIA. 2013.
+
+LICENSE
+
+GNU GPL. See the file LICENSE.
+
 WHAT IS DBLIB?
 
 The dblib library offers facilities for working with de Bruijn indices in
