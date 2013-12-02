@@ -16,7 +16,7 @@ Inductive term :=
 (* ---------------------------------------------------------------------------- *)
 
 (* The following definitions allow us to use the [DeBruijn] library. In
-   particular, of [traverse_term] defines the binding structure of terms. *)
+   particular, [traverse_term] defines the binding structure of terms. *)
 
 Instance Var_term : Var term := {
   var := TVar (* avoid eta-expansion *)
@@ -65,8 +65,9 @@ Qed.
 
 (* The following lemmas characterize [lift] and [subst]. In principle, the
    user does not need to explicitly state these lemmas, and that is fortunate.
-   We prove these lemmas in order to illustrate how the tactics [simpl_lift]
-   and [simpl_subst] can simplify applications of [lift] and [subst]. *)
+   Here, we prove these lemmas only in order to illustrate how the tactics
+   [simpl_lift] and [simpl_subst] can simplify applications of [lift] and
+   [subst]. *)
 
 Lemma lift_TVar:
   forall w k x,
@@ -79,14 +80,17 @@ Lemma lift_TApp:
   forall w k t1 t2,
   lift w k (TApp t1 t2) = TApp (lift w k t1) (lift w k t2).
 Proof.
-  intros. simpl_lift_goal. reflexivity.
+  (* [simpl_lift_goal] can also be used as a hint for [eauto].
+     This is useful when this equality goal occurs as a leaf
+     within a larger automated proof. *)
+  eauto with simpl_lift_goal.
 Qed.
 
 Lemma lift_TAbs:
   forall w k t,
   lift w k (TAbs t) = TAbs (lift w (1 + k) t).
 Proof.
-  intros. simpl_lift_goal. reflexivity.
+  eauto with simpl_lift_goal.
 Qed.
 
 Lemma subst_TVar:
@@ -100,14 +104,14 @@ Lemma subst_TApp:
   forall v k t1 t2,
   subst v k (TApp t1 t2) = TApp (subst v k t1) (subst v k t2).
 Proof.
-  intros. simpl_subst_goal. reflexivity.
+  eauto with simpl_subst_goal.
 Qed.
 
 Lemma subst_TAbs:
   forall v k t,
   subst v k (TAbs t) = TAbs (subst (shift 0 v) (1 + k) t).
 Proof.
-  intros. simpl_subst_goal. reflexivity.
+  eauto with simpl_subst_goal.
 Qed.
 
 (* ---------------------------------------------------------------------------- *)
@@ -132,6 +136,8 @@ Inductive red : term -> term -> Prop :=
       red t1 t2 ->
       red (TApp t t1) (TApp t t2).
 
+(* The reduction judgement is compatible with weakening. *)
+
 Lemma red_weakening:
   forall t1 t2,
   red t1 t2 ->
@@ -145,6 +151,9 @@ Qed.
 (* ---------------------------------------------------------------------------- *)
 
 (* Working with closedness. *)
+
+(* Again, we prove the following lemmas only in order to illustrate
+   the use of the tactic [inversion_closed]. *)
 
 Lemma inversion_closed_TVar:
   forall k x,
@@ -178,6 +187,8 @@ Lemma inversion_closed_TAbs:
 Proof.
   intros. inversion_closed. assumption.
 Qed.
+
+(* Reduction preserves closedness. *)
 
 Lemma red_closed:
   forall t1 t2,
@@ -222,7 +233,8 @@ Hint Constructors j : j.
 
 (* ---------------------------------------------------------------------------- *)
 
-(* Type preservation. *)
+(* The typing judgement is compatible with weakening, i.e., inserting a new
+   term variable. *)
 
 Lemma weakening:
   forall E t T,
@@ -234,6 +246,9 @@ Proof.
   induction 1; intros; subst; simpl_lift_goal;
   econstructor; eauto with lookup_insert insert_insert.
 Qed.
+
+(* The typing judgement is compatible with substitution, i.e., substituting a
+   well-typed term for a term variable. *)
 
 Lemma substitution:
   forall E x t2 T1 T2,
@@ -249,15 +264,9 @@ Proof.
   unfold subst_idx. dblib_by_cases; lookup_insert_all; eauto with j.
 Qed.
 
-Ltac j_inversion :=
-  match goal with h: j _ ?v _ |- _ =>
-    match v with
-    | TAbs _ =>
-        generalize h; clear h
-    end
-  end;
-  intro h;
-  dependent destruction h.
+(* The typing judgement is preserved by reduction. Note that this is
+   proved for an arbitrary environment [E]: we do not restrict our
+   attention to closed terms. *)
 
 Lemma type_preservation:
   forall t1 t2,
@@ -268,7 +277,9 @@ Lemma type_preservation:
 Proof.
   induction 1; intros ? ? h; subst; dependent destruction h; eauto with j.
   (* Case RedBeta. *)
-  j_inversion.
+  match goal with h: j _ (TAbs _) _ |- _ =>
+    inversion h; clear h; subst
+  end.
   eauto using substitution.
 Qed.
 

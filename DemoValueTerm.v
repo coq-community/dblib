@@ -40,8 +40,13 @@ Instance Traverse_my_value_my_term : Traverse my_value my_term := {
   traverse := traverse_my_term
 }.
 
-(* TEMPORARY à revoir en évitant la duplication d'énoncés
-   utiliser Instance ... with ... si ça existe *)
+(* TEMPORARY It is unfortunate that we have to first prove two
+   mutually dependent lemmas using [Lemma ... with ...], then write
+   down two independent [Instance] declarations. I would prefer to be
+   able to directly write two mutually depdendent instance
+   declarations, using [Instance ... with ...]. Here, I am forced to
+   duplicate the statement of the properties of interest, which is
+   unpleasant. *)
 
 Lemma traverse_my_value_injective:
   forall f,
