@@ -1032,7 +1032,7 @@ Proof.
   (* We now recognize a heterogeneous version of [LiftSubst1] at types
      [nat] and [V]. We could make it a separate lemma, but brute force
      is more concise. *)
-  unfold lift at 7, Lift_idx.
+  unfold lift at 5, Lift_idx.
   unfold subst_idx. dblib_by_cases; try rewrite lift_var; just_do_it.
 Qed.
 
@@ -1060,7 +1060,7 @@ Proof.
   (* We now recognize a heterogeneous version of [LiftSubst2] at types
      [nat] and [V]. We could make it a separate lemma, but brute force
      is more concise. *)
-  unfold lift at 7, Lift_idx.
+  unfold lift at 5, Lift_idx.
   unfold subst_idx. dblib_by_cases; try rewrite lift_var; just_do_it.
 Qed.
 
