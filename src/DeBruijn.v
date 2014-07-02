@@ -1,6 +1,6 @@
 Set Implicit Arguments.
 Generalizable All Variables.
-Require Import DblibTactics.
+Require Import Dblib.DblibTactics.
 
 (* ---------------------------------------------------------------------------- *)
 

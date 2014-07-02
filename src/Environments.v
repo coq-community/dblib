@@ -1,8 +1,7 @@
 Set Implicit Arguments.
 Require Import List.
 Opaque plus. (* avoid pesky reductions *)
-Require Import DblibTactics.
-Require Import DeBruijn.
+From Dblib Require Import DblibTactics DeBruijn.
 
 (* ---------------------------------------------------------------------------- *)
 

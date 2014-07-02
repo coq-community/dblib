@@ -1,6 +1,6 @@
 Set Implicit Arguments.
-Require Import DblibTactics.
-Require Import DeBruijn.
+Require Import Dblib.DblibTactics.
+Require Import Dblib.DeBruijn.
 
 (* Application to values & terms. *)
 
