@@ -191,3 +191,26 @@ ifndef SERIOUS
 clean::
 	rm -rf $(SHADOW)
 endif
+
+
+# --------------------------------------------------------------------------------
+# coq_makefile support for install targets
+#
+# coq_makefile generates (sub)Makefile that distill the hard-won
+# packaging knowledge of the Coq community. Using it for install
+# targets help respect (evolving) best practices.
+
+# inspired from http://adam.chlipala.net/cpdt/html/Large.html "Build Process"
+MODULES := DeBruijn DblibTactics Environments
+VS      := $(MODULES:%=%.v)
+LIBRARY_NAME := Dblib # installation will go to user-contrib/$(LIBRARY_NAME)...
+
+Makefile.coq_makefile: Makefile $(VS)
+	coq_makefile -R . $(LIBRARY_NAME) $(VS) -o Makefile.coq_makefile
+
+clean:: Makefile.coq_makefile
+	$(MAKE) -f Makefile.coq_makefile clean
+	rm -f Makefile.coq
+
+install: Makefile.coq_makefile
+	$(MAKE) -f Makefile.coq_makefile install
