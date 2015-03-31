@@ -201,16 +201,12 @@ endif
 # targets help respect (evolving) best practices.
 
 # inspired from http://adam.chlipala.net/cpdt/html/Large.html "Build Process"
-MODULES := DeBruijn DblibTactics Environments
-VS      := $(MODULES:%=%.v)
-LIBRARY_NAME := Dblib # installation will go to user-contrib/$(LIBRARY_NAME)...
-
-Makefile.coq_makefile: Makefile $(VS)
-	coq_makefile -R . $(LIBRARY_NAME) $(VS) -o Makefile.coq_makefile
+Makefile.coq_makefile: Makefile
+	coq_makefile -f _CoqProject -o Makefile.coq_makefile
 
 clean:: Makefile.coq_makefile
 	$(MAKE) -f Makefile.coq_makefile clean
 	rm -f Makefile.coq
 
 install: Makefile.coq_makefile
-	$(MAKE) -f Makefile.coq_makefile install
+	$(MAKE) -f Makefile.coq_makefile all install
