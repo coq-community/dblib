@@ -152,8 +152,8 @@ Lemma empty_eq_insert:
   False.
 Proof.
   unfold empty; intros; destruct x.
-  rewrite raw_insert_zero in *. congruence.
-  rewrite raw_insert_successor in *. congruence.
+  - rewrite raw_insert_zero in *. congruence.
+  - rewrite raw_insert_successor in *. congruence.
 Qed.
 
 (* ---------------------------------------------------------------------------- *)
@@ -180,8 +180,8 @@ Lemma lookup_successor:
   lookup (S x) e = lookup x (tail e).
 Proof.
   destruct e.
-  do 2 rewrite lookup_empty_None. reflexivity.
-  reflexivity.
+  - do 2 rewrite lookup_empty_None. reflexivity.
+  - reflexivity.
 Qed.
 
 (* ---------------------------------------------------------------------------- *)
@@ -210,8 +210,8 @@ Proof.
     elimtype False; omega
   | eauto with omega
   ].
-  (* One troublesome case. *)
-  erewrite <- lookup_empty_None. eauto with omega.
+    - (* One troublesome case. *)
+      erewrite <- lookup_empty_None. eauto with omega.
 Qed.
 
 Lemma lookup_insert_old:
@@ -222,14 +222,16 @@ Lemma lookup_insert_old:
 Proof.
   (* Induction over [x], which is non-zero. *)
   induction x; intros; [ elimtype False; omega | replace (S x - 1) with x by omega ].
-  (* Case analysis. *)
-  destruct y; destruct e; simpl; try solve [ eauto ].
-  (* One troublesome case. *)
-  rewrite lookup_empty_None. erewrite <- lookup_empty_None. eauto with omega.
-  (* Another troublesome case. *)
-  destruct x; intros; [ elimtype False; omega | replace (S x - 1) with x in * by omega ].
-  simpl lookup at 2.
-  eauto with omega.
+  - { (* Case analysis. *)
+      destruct y; destruct e; simpl; try solve [ eauto ].
+      - (* One troublesome case. *)
+        rewrite lookup_empty_None. erewrite <- lookup_empty_None. eauto with omega.
+      - (* Another troublesome case. *)
+        destruct x; intros;
+        [ elimtype False; omega | replace (S x - 1) with x in * by omega ].
+        simpl lookup at 2.
+        eauto with omega.
+    }
 Qed.
 
 Lemma lookup_shift_insert:
@@ -238,8 +240,8 @@ Lemma lookup_shift_insert:
 (* Hence, [lookup (shift y x) (insert y a e) = lookup x e]. *)
 Proof.
   intros. destruct_lift_idx.
-  rewrite lookup_insert_old by omega. f_equal. omega.
-  rewrite lookup_insert_recent by omega. reflexivity.
+  - rewrite lookup_insert_old by omega. f_equal. omega.
+  - rewrite lookup_insert_recent by omega. reflexivity.
 Qed.
 
 Ltac lookup_insert :=
@@ -312,7 +314,7 @@ Proof.
     congruence
   | eauto
   ].
-  eexists. split. reflexivity. congruence.
+  - eexists. split. reflexivity. congruence.
 Qed.
 
 (* ---------------------------------------------------------------------------- *)
@@ -325,14 +327,16 @@ Lemma insert_insert:
   raw_insert k a (raw_insert s b e) = raw_insert (1 + s) b (raw_insert k a e).
 Proof.
   intros ? k s. generalize s k; clear s k. induction s; intros.
-  (* Case [s = 0]. *)
-  destruct k; [ | elimtype False; omega ]. reflexivity.
-  (* Case [s > 0]. *)
-  destruct k.
-  (* Sub-case [k = 0]. *)
-  reflexivity.
-  (* Sub-case [k > 0]. *)
-  destruct e; replace (1 + S s) with (S (1 + s)) by omega; simpl; f_equal; eauto with omega.
+  - (* Case [s = 0]. *)
+    destruct k; [ | elimtype False; omega ]. reflexivity.
+  - (* Case [s > 0]. *)
+    { destruct k.
+      - (* Sub-case [k = 0]. *)
+        reflexivity.
+      - (* Sub-case [k > 0]. *)
+        destruct e; replace (1 + S s) with (S (1 + s)) by omega;
+          simpl; f_equal; eauto with omega.
+    }
 Qed.
 
 (* Even when it is not known which of [k] and [s] is greater, [insert] commutes
@@ -345,10 +349,10 @@ Lemma insert_insert_always:
 Proof.
   intros.
   destruct (le_gt_dec k s).
-  rewrite lift_idx_old by assumption. eauto using insert_insert.
-  rewrite lift_idx_recent by assumption.
-  replace k with (1 + (k - 1)) in * by omega. rewrite <- insert_insert by omega.
-  do 2 f_equal. omega.
+  - rewrite lift_idx_old by assumption. eauto using insert_insert.
+  - rewrite lift_idx_recent by assumption.
+    replace k with (1 + (k - 1)) in * by omega. rewrite <- insert_insert by omega.
+    do 2 f_equal. omega.
 Qed.
 
 (* Attempting to rewrite in both directions may seem redundant, because of the
@@ -401,10 +405,10 @@ Lemma insert_eq_insert_2:
   insert x b e1 = insert x b e2.
 Proof.
   induction x; simpl; intros.
-  congruence.
-  destruct e1; destruct e2;
-  match goal with h: _ = _ |- _ => injection h; clear h; intros end;
-  f_equal; try congruence; eauto.
+  - congruence.
+  - destruct e1; destruct e2;
+      match goal with h: _ = _ |- _ => injection h; clear h; intros end;
+      f_equal; try congruence; eauto.
 Qed.
 
 (* This is a really crazy diamond lemma that says, roughly, if the equation
@@ -425,42 +429,47 @@ Lemma insert_eq_insert_3:
   y2 = (if le_gt_dec x1 y1 then x1 else x1 - 1).
 Proof.
   induction x1; intros.
-  (* Case [x1 = 0]. *)
-  destruct x2; [ omega | ].
-  rewrite raw_insert_zero in *. rewrite raw_insert_successor in *.
-  match goal with h: _ = _ |- _ =>
-    injection h; clear h; intros
-  end.
-  destruct e2; [ congruence | ]. subst. simpl.
-  exists e2. exists x2. exists 0. eauto.
-  (* Case [x1 > 0]. *)
-  destruct x2.
-  (* Sub-case [x2 = 0]. *)
-  rewrite raw_insert_zero in *. rewrite raw_insert_successor in *.
-  match goal with h: _ = _ |- _ =>
-    injection h; clear h; intros
-  end.
-  destruct e1; [ congruence | ]. subst.
-  exists e1. exists 0. exists x1.
-  split. eauto.
-  split. eauto.
-  split. eauto.
-  dblib_by_cases. omega.
-  (* Sub-case [x2 > 0]. *)
-  do 2 rewrite raw_insert_successor in *.
-  assert (xx: x1 <> x2). omega.
-  match goal with h: _ = _ |- _ =>
-    injection h; clear h; intros h ?;
-    generalize (IHx1 _ _ _ _ _ h xx); intros [ e [ y1 [ y2 [ ? [ ? [ ? ? ]]]]]]
-  end.
-  (* [e1] and [e2] must be non-nil. *)
-  destruct e1; simpl tl in *; [ elimtype False; eauto using insert_nil | ].
-  destruct e2; simpl tl in *; [ elimtype False; eauto using insert_nil | ].
-  exists (o :: e). exists (S y1). exists (S y2).
-  split. simpl. congruence.
-  split. simpl. congruence.
-  split. eapply translate_lift with (k := 1). eauto.
-  dblib_by_cases; omega.
+  - (* Case [x1 = 0]. *)
+    { destruct x2; [ omega | ].
+    - rewrite raw_insert_zero in *. rewrite raw_insert_successor in *.
+      match goal with h: _ = _ |- _ =>
+        injection h; clear h; intros
+      end.
+      { destruct e2; [ congruence | ].
+      - subst. simpl.
+        exists e2. exists x2. exists 0. eauto.
+      }
+    }
+  - (* Case [x1 > 0]. *)
+    { destruct x2.
+      - (* Sub-case [x2 = 0]. *)
+        rewrite raw_insert_zero in *. rewrite raw_insert_successor in *.
+        match goal with h: _ = _ |- _ =>
+         injection h; clear h; intros
+        end.
+        { destruct e1; [ congruence | ]. subst.
+        - exists e1. exists 0. exists x1.
+          split. eauto.
+          split. eauto.
+          split. eauto.
+          dblib_by_cases. omega.
+        }
+      - (* Sub-case [x2 > 0]. *)
+        do 2 rewrite raw_insert_successor in *.
+        assert (xx: x1 <> x2). omega.
+        match goal with h: _ = _ |- _ =>
+          injection h; clear h; intros h ?;
+          generalize (IHx1 _ _ _ _ _ h xx); intros [ e [ y1 [ y2 [ ? [ ? [ ? ? ]]]]]]
+        end.
+        (* [e1] and [e2] must be non-nil. *)
+        { destruct e1; simpl tl in *; [ elimtype False; eauto using insert_nil | ].
+        - destruct e2; simpl tl in *; [ elimtype False; eauto using insert_nil | ].
+        + exists (o :: e). exists (S y1). exists (S y2).
+          split. simpl. congruence.
+          split. simpl. congruence.
+          split. eapply translate_lift with (k := 1). eauto.
+          dblib_by_cases; omega.
+        }}
 Qed.
 
 (* ---------------------------------------------------------------------------- *)
@@ -472,8 +481,8 @@ Lemma map_insert:
   map f (insert x a e) = insert x (f a) (map f e).
 Proof.
   induction x; intros; destruct e; simpl; eauto.
-  rewrite IHx. reflexivity.
-  match goal with o: option _ |- _ => destruct o end; f_equal; eauto.
+  - rewrite IHx. reflexivity.
+  - match goal with o: option _ |- _ => destruct o end; f_equal; eauto.
 Qed.
 
 (* The following variant is easier to use for [eauto]. *)
@@ -505,8 +514,8 @@ Lemma map_raw_insert:
   map f (raw_insert x None e) = raw_insert x None (map f e).
 Proof.
   induction x; intros; destruct e; simpl; eauto.
-  rewrite IHx. reflexivity.
-  match goal with o: option _ |- _ => destruct o end; f_equal; eauto.
+  - rewrite IHx. reflexivity.
+  - match goal with o: option _ |- _ => destruct o end; f_equal; eauto.
 Qed.
 
 (* ---------------------------------------------------------------------------- *)
@@ -519,8 +528,8 @@ Lemma map_map_fuse:
   map f (map g e) = map h e.
 Proof.
   induction e; intros;
-  try match goal with o: option _ |- _ => destruct o end;
-  simpl; eauto with f_equal.
+    try match goal with o: option _ |- _ => destruct o end;
+    simpl; eauto with f_equal.
 Qed.
 
 Lemma map_map_exchange:
@@ -529,8 +538,8 @@ Lemma map_map_exchange:
   map f1 (map f2 e) = map g1 (map g2 e).
 Proof.
   induction e; intros;
-  try match goal with o: option _ |- _ => destruct o end;
-  simpl; eauto with f_equal.
+    try match goal with o: option _ |- _ => destruct o end;
+    simpl; eauto with f_equal.
 Qed.
 
 Lemma map_lift_map_lift:
@@ -561,8 +570,8 @@ Lemma map_map_vanish:
   map f (map g e) = e.
 Proof.
   induction e; intros;
-  try match goal with o: option _ |- _ => destruct o end;
-  simpl; eauto with f_equal.
+    try match goal with o: option _ |- _ => destruct o end;
+    simpl; eauto with f_equal.
 Qed.
 
 (* ---------------------------------------------------------------------------- *)
@@ -602,8 +611,8 @@ Lemma fold_invariant:
 Proof.
   intros ? ? ? ? ? init step.
   induction e; simpl.
-  eapply init.
-  eapply step. eauto.
+  - eapply init.
+  - eapply step. eauto.
 Qed.
 
 (* ---------------------------------------------------------------------------- *)
@@ -628,8 +637,8 @@ Lemma lookup_beyond_length:
   lookup x e = None.
 Proof.
   induction e; simpl; intros.
-  eapply lookup_empty_None.
-  destruct x; [ omega | ]. simpl. eapply IHe. omega.
+  - eapply lookup_empty_None.
+  - destruct x; [ omega | ]. simpl. eapply IHe. omega.
 Qed.
 
 (* Every variable that is defined in the environment is less than the
@@ -644,11 +653,12 @@ Proof.
   intros.
   (* If [x < k] holds, the result is immediate. Consider the other case,
      [k <= x]. *)
-  case (le_gt_dec k x); intro; try tauto.
-  (* By definition of [length], [lookup x e] is [None]. *)
-  assert (lookup x e = None). eapply lookup_beyond_length. omega.
-  (* We obtain a contradiction. *)
-  congruence.
+  { case (le_gt_dec k x); intro; try tauto.
+  - (* By definition of [length], [lookup x e] is [None]. *)
+    assert (lookup x e = None). eapply lookup_beyond_length. omega.
+    (* We obtain a contradiction. *)
+    congruence.
+  }
 Qed.
 
 Hint Resolve defined_implies_below_length : lift_idx_hints.
@@ -695,10 +705,11 @@ Lemma length_insert_general:
   length (raw_insert x o e) = mymax (1 + k) (1 + x).
 Proof.
   induction x; simpl; intros; subst.
-  mymax.
-  destruct e; simpl.
-  mymax. erewrite IHx by reflexivity. simpl. mymax.
-  erewrite IHx by reflexivity. mymax.
+  - mymax.
+  - { destruct e; simpl.
+      - mymax. erewrite IHx by reflexivity. simpl. mymax.
+      - erewrite IHx by reflexivity. mymax.
+    }
 Qed.
 
 (* This should be the usual case. *)
@@ -821,8 +832,8 @@ Proof.
   unfold agree. do 8 intro. intros n ?.
   (* Reason by cases: [x = n], [x < n], [x > n]. *)
   case (le_gt_dec x n); [ case (eq_nat_dec x n) | ]; intros;
-  (* In each case, [lookup_insert] simplifies the goal. *)
-  do 2 lookup_insert; eauto with omega.
+    (* In each case, [lookup_insert] simplifies the goal. *)
+    do 2 lookup_insert; eauto with omega.
 Qed.
 
 Hint Resolve defined_implies_below_length agree_below agree_empty_left
@@ -888,7 +899,9 @@ Section Subsume.
     exists a1,
     o1 = Some a1 /\ sub a1 a2.
   Proof.
-    intros. destruct o1. eauto. elimtype False. eauto using osub_None_Some.
+    intros. destruct o1.
+    - eauto.
+    - elimtype False. eauto using osub_None_Some.
   Qed.
 
   (* Then, it is extended pointwise to environments. *)
@@ -955,8 +968,8 @@ Section Subsume.
     unfold subsume. do 7 intro. intros n.
     (* Reason by cases: [x = n], [x < n], [x > n]. *)
     case (le_gt_dec x n); [ case (eq_nat_dec x n) | ]; intros;
-    (* In each case, [lookup_insert] simplifies the goal. *)
-    repeat lookup_insert; eauto.
+      (* In each case, [lookup_insert] simplifies the goal. *)
+      repeat lookup_insert; eauto.
   Qed.
 
   Lemma subsume_cons:
@@ -966,8 +979,8 @@ Section Subsume.
     subsume (o :: e1) e2.
   Proof.
     do 3 intro. intros h1 h2. intro n. destruct n.
-    eauto.
-    do 2 rewrite lookup_successor. eauto.
+    - eauto.
+    - do 2 rewrite lookup_successor. eauto.
   Qed.
 
   Lemma subsume_cons_cons_inversion:
@@ -978,8 +991,8 @@ Section Subsume.
   Proof.
     do 4 intro. intro h.
     split.
-    eapply (h 0).
-    intro n. eapply (h (1 + n)).
+    - eapply (h 0).
+    - intro n. eapply (h (1 + n)).
   Qed.
 
   Lemma subsume_insert_inversion:
@@ -992,37 +1005,38 @@ Section Subsume.
   Proof.
     (* Really painful. *)
     induction e1; simpl; intros.
-    (* Base. *)
-    elimtype False.
-    match goal with h: subsume nil _ |- _ =>
-      generalize (h x); clear h; intro h;
-      rewrite lookup_insert_bingo in h by reflexivity;
-      rewrite lookup_empty_None in h
-    end.
-    solve [ eauto using osub_None_Some ].
-    (* Step. *)
-    destruct x.
-    (* Case [x = 0]. *)
-    match goal with h: subsume _ _ |- _ =>
-      rewrite raw_insert_zero in h;
-      generalize (subsume_cons_cons_inversion h); clear h; intros [ h ? ];
-      generalize (osub_Some_inversion h); intros [ ? [ ? ? ]]; subst
-    end.
-    do 2 eexists.
-    rewrite raw_insert_zero.
-    solve [ eauto ].
-    (* Case [x > 0]. *)
-    match goal with h: subsume _ _ |- _ =>
-      rewrite raw_insert_successor in h;
-      generalize (subsume_cons_cons_inversion h); clear h; intros [ ? h ];
-      generalize (IHe1 _ _ _ h); clear IHe1; intros [ f1 [ a1 [ ? [ ? ? ]]]]; subst
-    end.
-    exists (a :: f1). exists a1.
-    rewrite raw_insert_successor. simpl.
-    split; [ | split ].
-    reflexivity.
-    eauto using subsume_cons.
-    eauto.
+    - (* Base. *)
+      elimtype False.
+      match goal with h: subsume nil _ |- _ =>
+        generalize (h x); clear h; intro h;
+        rewrite lookup_insert_bingo in h by reflexivity;
+        rewrite lookup_empty_None in h
+      end.
+      solve [ eauto using osub_None_Some ].
+    - (* Step. *)
+      { destruct x.
+        - (* Case [x = 0]. *)
+          match goal with h: subsume _ _ |- _ =>
+            rewrite raw_insert_zero in h;
+            generalize (subsume_cons_cons_inversion h); clear h; intros [ h ? ];
+            generalize (osub_Some_inversion h); intros [ ? [ ? ? ]]; subst
+          end.
+          do 2 eexists.
+          rewrite raw_insert_zero.
+          solve [ eauto ].
+        - (* Case [x > 0]. *)
+          match goal with h: subsume _ _ |- _ =>
+            rewrite raw_insert_successor in h;
+            generalize (subsume_cons_cons_inversion h); clear h; intros [ ? h ];
+            generalize (IHe1 _ _ _ h); clear IHe1; intros [ f1 [ a1 [ ? [ ? ? ]]]]; subst
+          end.
+          exists (a :: f1). exists a1.
+          rewrite raw_insert_successor. simpl.
+          split; [ | split ].
+          reflexivity.
+          eauto using subsume_cons.
+          eauto.
+      }
   Qed.
 
   (* Applying a transformation [f] pointwise to two environments preserves
@@ -1081,8 +1095,8 @@ Lemma length_concat:
   length (concat e1 e2) <= n.
 Proof.
   induction e2; simpl; intros.
-  replace n with n1 by omega. assumption.
-  eauto using length_insert, omega_hint_1 with omega.
+  - replace n with n1 by omega. assumption.
+  - eauto using length_insert, omega_hint_1 with omega.
 Qed.
 
 Hint Resolve length_concat : length construction_closed.
@@ -1097,8 +1111,8 @@ Lemma agree_concat:
   agree (concat e1 e) (concat e2 e) n.
 Proof.
   induction e; simpl; intros.
-  replace n with k by omega. assumption.
-  eauto using agree_insert with omega.
+  - replace n with k by omega. assumption.
+  - eauto using agree_insert with omega.
 Qed.
 
 Hint Resolve agree_concat : agree.
@@ -1112,7 +1126,7 @@ Lemma insert_concat:
   raw_insert nx o (concat e1 e2) = concat (raw_insert x o e1) e2.
 Proof.
   induction n; intros; subst; destruct e2; simpl in *; try discriminate; auto.
-  rewrite insert_insert by omega.
+- rewrite insert_insert by omega.
   erewrite <- (IHn (1 + x)) by first [ congruence | eauto ].
   eauto with f_equal omega.
 Qed.
