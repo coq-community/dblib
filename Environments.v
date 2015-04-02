@@ -1131,6 +1131,14 @@ Proof.
   eauto with f_equal omega.
 Qed.
 
+Lemma concat_app:
+  forall (A : Type) e1 (e2 e3 : list A),
+    concat e1 (e2 ++ e3) = concat (concat e1 e2) e3.
+Proof.
+  intros A e1 e2 e3. generalize e1. clear e1.
+  induction e2; intro e1; simpl; auto.
+Qed.
+
 (* [replicate n a] is a list of [n] elements, all of which are
    equal to [a]. *)
 
