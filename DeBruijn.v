@@ -141,6 +141,17 @@ Instance Lift_idx : Lift nat := {
     if le_gt_dec k x then w + x else x
 }.
 
+(* Lowering, the inverse operation to lifting *)
+Class Lower (T : Type) := {
+  lower:
+    nat -> nat -> T -> T
+}.
+
+Instance Lower_idx : Lower nat := {
+  lower w k x :=
+    if le_gt_dec k x then x - w else x
+}.
+
 (* [shift k t] is an abbreviation for [lift 1 k t]. *)
 
 (* From a programming language point of view, [shift] can be understood
@@ -154,6 +165,10 @@ Instance Lift_idx : Lift nat := {
 
 Notation shift :=
   (lift 1).
+
+(* [unshift k t] is an abbreviation for [lower 1 k t] *)
+Notation unshift :=
+  (lower 1).
 
 (* [subst v k t] is the term obtained by substituting the value [v] for
    the variable [k] in the term [t]. *)
@@ -632,6 +647,21 @@ Proof.
   reflexivity.
 Qed.
 
+(* Generic definition of [lower] in terms of [traverse]. *)
+Instance Lower_Traverse `{Var V, Traverse V T} : Lower T := {
+  lower w k t :=
+    traverse (fun l x => var (lower w (l + k) x)) 0 t
+}.
+
+Lemma expand_lower:
+  forall `{Var V, Traverse V T},
+  forall w k t,
+  lower w k t =
+  traverse (fun l x => var (lower w (l + k) x)) 0 t.
+Proof.
+  reflexivity.
+Qed.
+
 (* This auxiliary tactic simplifies expressions of the form [x + 0] in
    the goal. It does *not* affect [x + ?y] where [y] is a
    meta-variable. *)
@@ -665,11 +695,29 @@ Proof.
   just_do_it.
 Qed.
 
+Lemma recognize_lower:
+  forall `{Var V, Traverse V T},
+  TraverseRelative ->
+  forall w k1 k2 t,
+  forall traverse_,
+  traverse_ = traverse -> (* helps rewrite *)
+  traverse_ (fun l x => var (lower w (l + k2) x)) k1 t =
+  lower w (k1 + k2) t.
+Proof.
+  intros. subst. simpl.
+  eapply traverse_relative; [ | instantiate (1 := k1); omega ].
+  just_do_it.
+Qed.
+
 (* This tactic recognizes an application of the user's [traverse_term]
    function that is really a [lift] operation, and folds it. *)
 
 Ltac recognize_lift :=
   rewrite recognize_lift by eauto with typeclass_instances;
+  repeat rewrite plus_0_l. (* useful when [k1] is zero *)
+
+Ltac recognize_lower :=
+  rewrite recognize_lower by eauto with typeclass_instances;
   repeat rewrite plus_0_l. (* useful when [k1] is zero *)
 
 Ltac recognize_lift_in h :=
@@ -729,6 +777,41 @@ Ltac simpl_lift :=
   
   end.
 
+Ltac simpl_lower :=
+  match goal with
+
+  (* Case: [_traverse] appears in the goal. *)
+  (* this binds the meta-variable [_traverse] to the user's [traverse_term] *)
+  |- context[?_traverse (fun l x : nat => var (lower ?w (l + ?k) x)) _ _] =>
+      (* this causes the reduction of the fixpoint: *)
+    unfold _traverse; fold _traverse;
+    (* we now have a term of the form [TApp (traverse_term ...) ...].
+       There remains to recognize the definition of [lift]. *)
+    plus_0_r; (* useful when we have traversed a binder: 1 + 0 is 1 *)
+    (* use [recognize_lift] at the specific type of the [_traverse] function
+       that we have just simplified *)
+    match type of _traverse with (nat -> nat -> ?V) -> nat -> ?T -> ?T =>
+      repeat rewrite (@recognize_lower V _ T _ _) by eauto with typeclass_instances
+    end;
+    repeat rewrite plus_0_l (* useful when [k1] is zero and we are at a leaf *)
+
+  (* Case: [_traverse] appears in a hypothesis. *)
+  (* this binds the meta-variable [_traverse] to the user's [traverse_term] *)
+  | h: context[?_traverse (fun l x : nat => var (lower ?w (l + ?k) x)) _ _] |- _ =>
+    (* this causes the reduction of the fixpoint: *)
+    unfold _traverse in h; fold _traverse in h;
+    (* we now have a term of the form [TApp (traverse_term ...) ...].
+       There remains to recognize the definition of [lift]. *)
+    plus_0_r_in h; (* useful when we have traversed a binder: 1 + 0 is 1 *)
+    (* use [recognize_lift] at the specific type of the [_traverse] function
+       that we have just simplified *)
+    match type of _traverse with (nat -> nat -> ?V) -> nat -> ?T -> ?T =>
+      repeat rewrite (@recognize_lower V _ T _ _)  in h by eauto with typeclass_instances
+    end;
+    repeat rewrite plus_0_l in h (* useful when [k1] is zero and we are at a leaf *)
+  
+  end.
+
 (* This tactic attempts to all occurrences of [lift] in the goal. *)
 
 Ltac simpl_lift_goal :=
@@ -740,6 +823,18 @@ Ltac simpl_lift_goal :=
   repeat simpl_lift;
   (* if we have exposed applications of [lift_idx], try simplifying them away *)
   repeat lift_idx;
+  (* if this exposes uses of [var], replace them with the user's [TVar] constructor *)
+  simpl var.
+
+Ltac simpl_lower_goal :=
+  (* this replaces [lift] with applications of [traverse] *)
+  repeat rewrite @expand_lower;
+  (* this replaces the generic [traverse] with the user's [_traverse] functions *)
+  simpl traverse;
+  (* this simplifies applications of each [_traverse] function and folds them back *)
+  repeat simpl_lower;
+  (* if we have exposed applications of [lift_idx], try simplifying them away *)
+  (* repeat lower_idx; *)
   (* if this exposes uses of [var], replace them with the user's [TVar] constructor *)
   simpl var.
 
@@ -1683,5 +1778,5 @@ Qed.
    prevents [simpl] from unfolding the definitions and making a mess. *)
 
 Global Opaque lift.
+Global Opaque lower.
 Global Opaque subst.
-
