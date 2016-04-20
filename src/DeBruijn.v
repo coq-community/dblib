@@ -1485,6 +1485,7 @@ Ltac prove_traverse_identifies_var :=
   reflexivity.
 
 Ltac prove_traverse_var_injective :=
+  let t2 := fresh "t2" in
   intros ? ? t1; induction t1; intro t2; destruct t2; simpl;
   intros ? h; inversion h;
   f_equal;
