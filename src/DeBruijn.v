@@ -1032,7 +1032,10 @@ Proof.
   (* We now recognize a heterogeneous version of [LiftSubst1] at types
      [nat] and [V]. We could make it a separate lemma, but brute force
      is more concise. *)
-  unfold lift at 5, Lift_idx.
+  replace (lift w (l + k) x)
+    with ((let (lift0) := Lift_idx in lift0) w (l + k) x)
+    by (unfold lift; reflexivity).
+  unfold Lift_idx.
   unfold subst_idx. dblib_by_cases; try rewrite lift_var; just_do_it.
 Qed.
 
@@ -1060,7 +1063,10 @@ Proof.
   (* We now recognize a heterogeneous version of [LiftSubst2] at types
      [nat] and [V]. We could make it a separate lemma, but brute force
      is more concise. *)
-  unfold lift at 5, Lift_idx.
+  replace (lift w (1 + (l + k)) x)
+    with ((let (lift0) := Lift_idx in lift0) w (1 + (l + k)) x)
+    by (unfold lift; reflexivity).
+  unfold Lift_idx.
   unfold subst_idx. dblib_by_cases; try rewrite lift_var; just_do_it.
 Qed.
 
@@ -1485,8 +1491,11 @@ Ltac prove_traverse_identifies_var :=
   reflexivity.
 
 Ltac prove_traverse_var_injective :=
+  let t1 := fresh "t1" in
+  intros ? ? t1; induction t1;
   let t2 := fresh "t2" in
-  intros ? ? t1; induction t1; intro t2; destruct t2; simpl;
+  intro t2; destruct t2; simpl;
+  let h := fresh "h" in
   intros ? h; inversion h;
   f_equal;
   eauto using @traverse_var_injective with typeclass_instances.
@@ -1495,6 +1504,7 @@ Ltac prove_traverse_var_injective :=
      been proved injective. *)
 
 Ltac prove_traverse_functorial :=
+  let t := fresh "t" in
   intros ? ? t; induction t; intros;
   (* We do not use [simpl] because it is too brutal. We just want to unfold
      the definition of [traverse], exposing a call to the user's [_traverse],
@@ -1507,6 +1517,7 @@ Ltac prove_traverse_functorial :=
   f_equal; eauto using @traverse_functorial with typeclass_instances.
 
 Ltac prove_traverse_relative :=
+  let t := fresh "t" in
   intros ? ? ? t; induction t; intros; subst;
   (* We do not use [simpl] because it is too brutal. We just want to unfold
      the definition of [traverse], exposing a call to the user's [_traverse],
