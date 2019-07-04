@@ -35,7 +35,7 @@ COQDEP  := $(COQBINDIR)coqdep -I $(SHADOW)
 
 # Source and target files.
 
-VFILES       := $(wildcard *.v)
+VFILES       := $(wildcard src/*.v)
 SHADOWVFILES := $(patsubst %.v,$(SHADOW)/%.v,$(VFILES))
 VOFILES      := $(VFILES:.v=.vo)
 GLOBFILES    := $(VFILES:.v=.glob)
@@ -46,8 +46,8 @@ DEPS         := $(VFILES:.v=.v.d) $(SHADOWVFILES:.v=.v.d)
 # former are used by [make wc] and [make axioms].
 
 THIRDPARTY := LibTactics.v
-MINE       := $(shell ls *.v | grep -v $(THIRDPARTY))
-NOAXIOMS   := $(shell ls *.v | grep -v $(THIRDPARTY))
+MINE       := $(shell ls src/*.v | grep -v $(THIRDPARTY))
+NOAXIOMS   := $(shell ls src/*.v | grep -v $(THIRDPARTY))
 
 # --------------------------------------------------------------------------------
 
@@ -68,7 +68,7 @@ all: $(DEPS)
 # creates phony files while coqdep runs and removes them immediately.
 
 %.v.d: %.v
-	@ /bin/mkdir -p $(SHADOW)
+	@ /bin/mkdir -p $(SHADOW)/src
 	@ ./ocamldep.wrapper $(SHADOWVFILES) - $(COQDEP) $< > $@
 
 # --------------------------------------------------------------------------------
@@ -140,8 +140,7 @@ ARCHIVE  := $(NAME)-$(DATE)
 
 archive: # html
 	rm -rf $(ARCHIVE) $(ARCHIVE).tar.gz
-	mkdir $(ARCHIVE) && cp README LICENSE $(ARCHIVE)
-	mkdir $(ARCHIVE)/src && cp *.v Makefile.core $(ARCHIVE)/src
+	mkdir $(ARCHIVE) && cp -r README LICENSE src Makefile.core $(ARCHIVE)
 	cp Makefile.user $(ARCHIVE)/src/Makefile
 	echo "-j1" > $(ARCHIVE)/src/cores
 #	mkdir $(ARCHIVE)/html && cp *.html *.css *.js $(ARCHIVE)/html
@@ -180,8 +179,8 @@ coqj: coqj.ml
 # Cleanup.
 
 clean::
-	rm -f *.vo *~ *.v.d *.glob *.html .\#*
-	rm -f coqj.ml coqj *.cmi *.cmx *.o
+	rm -f **/*.vo **/*~ **/*.v.d **/*.glob **/*.html .\#*
+	rm -f coqj.ml coqj **/*.cmi **/*.cmx **/*.o
 	rm -f coq2html.ml coq2html
 	rm -f coq2index.ml coq2index
 	rm -f *.tex
