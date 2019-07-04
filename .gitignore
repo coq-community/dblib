@@ -1,7 +1,11 @@
 *.glob
 *.vo
 *.v.d
-_shadow
+*.aux
+
+Makefile.coq
+Makefile.coq.conf
+
 coqj
 coqj.ml
 *.tex
@@ -10,9 +14,7 @@ coq2html.ml
 *.html
 coq2index
 coq2index.ml
-targets
-cores
+
 *.cmi
 *.cmx
 *.o
-Makefile.coq_makefile
