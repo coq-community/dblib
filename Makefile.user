@@ -15,8 +15,8 @@ MAKEFLAGS := -j1
 
 # Include directives.
 
-COQC    := $(COQBINDIR)coqc -I .
-COQDEP  := $(COQBINDIR)coqdep -I .
+COQC    := $(COQBIN)coqc -Q . Dblib
+COQDEP  := $(COQBIN)coqdep -Q . Dblib
 
 # --------------------------------------------------------------------------------
 

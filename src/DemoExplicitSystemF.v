@@ -1,8 +1,8 @@
 Set Implicit Arguments.
 Require Export Coq.Program.Equality.
-Require Import DblibTactics.
-Require Import DeBruijn.
-Require Import Environments.
+Require Import Dblib.DblibTactics.
+Require Import Dblib.DeBruijn.
+Require Import Dblib.Environments.
 
 (* ---------------------------------------------------------------------------- *)
 

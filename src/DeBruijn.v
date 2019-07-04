@@ -1,6 +1,6 @@
 Set Implicit Arguments.
 Generalizable All Variables.
-Require Import DblibTactics.
+Require Import Dblib.DblibTactics.
 
 (* ---------------------------------------------------------------------------- *)
 
@@ -681,8 +681,8 @@ Ltac recognize_lift_in h :=
    constructor of the user-defined type of [term]s. We assume that the user
    has manually rewritten one or several occurrences of [lift] using the lemma
    [expand_lift], so as to indicate where simplification is desired. Thus, one
-   or several instances of [traverse] must be visible in a hypothesis or in
-   the goal. We further assume that [simpl traverse] has been used so as to
+   or several instances of [traverse] must be visible in a hypothesis or in the
+   goal. We further assume that [simpl (@traverse _ _ _)] has been used so as to
    replace the generic [traverse] with user-defined [_traverse] functions. We
    start there and do the rest of the work. *)
 
@@ -735,7 +735,7 @@ Ltac simpl_lift_goal :=
   (* this replaces [lift] with applications of [traverse] *)
   repeat rewrite @expand_lift;
   (* this replaces the generic [traverse] with the user's [_traverse] functions *)
-  simpl traverse;
+  simpl (@traverse _ _ _);
   (* this simplifies applications of each [_traverse] function and folds them back *)
   repeat simpl_lift;
   (* if we have exposed applications of [lift_idx], try simplifying them away *)
@@ -751,7 +751,7 @@ Hint Extern 1 (_ = lift _ _ _) => simpl_lift_goal : simpl_lift_goal.
 
 Ltac simpl_lift_all :=
   repeat rewrite @expand_lift in *;
-  simpl traverse in *;
+  simpl (@traverse _ _ _) in *;
   repeat simpl_lift;
   repeat lift_idx_all;
   simpl var in *.
@@ -761,7 +761,7 @@ Ltac simpl_lift_all :=
 
 Ltac simpl_lift_in h :=
   repeat rewrite @expand_lift in h;
-  simpl traverse in h;
+  simpl (@traverse _ _ _) in h;
   repeat simpl_lift;
   repeat lift_idx_in h;
   simpl var in h.
@@ -941,7 +941,7 @@ Ltac simpl_subst_goal :=
   (* this replaces [subst] with applications of [traverse] *)
   repeat rewrite @expand_subst;
   (* this replaces the generic [traverse] with the user's [_traverse] functions *)
-  simpl traverse;
+  simpl (@traverse _ _ _);
   (* this simplifies applications of each [_traverse] function and folds them back *)
   repeat simpl_subst;
   (* if we have exposed applications of [subst_idx], try simplifying them away *)
@@ -957,7 +957,7 @@ Hint Extern 1 (_ = subst _ _ _) => simpl_subst_goal : simpl_subst_goal.
 
 Ltac simpl_subst_all :=
   repeat rewrite @expand_subst in *;
-  simpl traverse in *;
+  simpl (@traverse _ _ _) in *;
   repeat simpl_subst;
   repeat subst_idx_all;
   simpl var in *.
@@ -967,7 +967,7 @@ Ltac simpl_subst_all :=
 
 Ltac simpl_subst_in h :=
   repeat rewrite @expand_subst in h;
-  simpl traverse in h;
+  simpl (@traverse _ _ _) in h;
   repeat simpl_subst;
   repeat subst_idx_in h;
   simpl var in h.
@@ -1032,7 +1032,7 @@ Proof.
   (* We now recognize a heterogeneous version of [LiftSubst1] at types
      [nat] and [V]. We could make it a separate lemma, but brute force
      is more concise. *)
-  unfold lift at 7, Lift_idx.
+  unfold lift at 5, Lift_idx.
   unfold subst_idx. dblib_by_cases; try rewrite lift_var; just_do_it.
 Qed.
 
@@ -1060,7 +1060,7 @@ Proof.
   (* We now recognize a heterogeneous version of [LiftSubst2] at types
      [nat] and [V]. We could make it a separate lemma, but brute force
      is more concise. *)
-  unfold lift at 7, Lift_idx.
+  unfold lift at 5, Lift_idx.
   unfold subst_idx. dblib_by_cases; try rewrite lift_var; just_do_it.
 Qed.
 
@@ -1313,7 +1313,7 @@ Ltac inversion_closed_in_internal h :=
   (* Unfold the definition of [closed]. This exposes [lift]. *)
   unfold closed in h;
   (* If [lift] is applied to a constructor, simplify it. *)
-  rewrite expand_lift in h; simpl traverse in h; simpl_lift;
+  rewrite expand_lift in h; simpl (@traverse _ _ _) in h; simpl_lift;
   (* This may result in an equality that involves two constructors. Decompose it. *)
   try (injection h; clear h; intros).
   (* The above line assumes that [lift] is opaque. Otherwise, the following would
@@ -1485,6 +1485,7 @@ Ltac prove_traverse_identifies_var :=
   reflexivity.
 
 Ltac prove_traverse_var_injective :=
+  let t2 := fresh "t2" in
   intros ? ? t1; induction t1; intro t2; destruct t2; simpl;
   intros ? h; inversion h;
   f_equal;
@@ -1499,7 +1500,7 @@ Ltac prove_traverse_functorial :=
      the definition of [traverse], exposing a call to the user's [_traverse],
      and then perform one step of reduction, exploiting the user's definition
      of [_traverse] as a Fixpoint. *)
-  simpl traverse at 1 2 3; (* not 4! *)
+  simpl (@traverse _ _ _) at 1 2 3; (* not 4! *)
   match goal with |- ?_traverse _ _ (?_traverse _ _ _) = ?_traverse _ _ _ =>
     unfold _traverse; fold _traverse
   end;
@@ -1514,7 +1515,7 @@ Ltac prove_traverse_relative :=
      simplify further -- in particular, if the right-hand side of the user's
      Fixpoint contains occurrences of [traverse], we do not want to unfold
      them. *)
-  simpl traverse;
+  simpl (@traverse _ _ _);
   match goal with |- ?_traverse _ _ _ = ?_traverse _ _ _ =>
     unfold _traverse; fold _traverse
   end;
@@ -1526,7 +1527,7 @@ Ltac prove_traverse_var_is_identity :=
      the definition of [traverse], exposing a call to the user's [_traverse],
      and then perform one step of reduction, exploiting the user's definition
      of [_traverse] as a Fixpoint. *)
-  simpl traverse;
+  simpl (@traverse _ _ _);
   match goal with |- ?_traverse _ _ _ = _ =>
     unfold _traverse; fold _traverse
   end;
