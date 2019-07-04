@@ -1,4 +1,0 @@
--R . Dblib
-DeBruijn.v
-DblibTactics.v
-Environments.v
