@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/coq-community/dblib.svg?branch=master)](https://travis-ci.org/coq-community/dblib)
+
 AUTHOR
 
 François Pottier, INRIA. 2013.
