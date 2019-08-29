@@ -3,7 +3,7 @@
 # Dblib
 
 - **Author**: François Pottier, INRIA. 2013.
-- **License**: GNU GPL. See [LICENSE](LICENSE).
+- **License**: GNU GPLv3. See [LICENSE](LICENSE).
 - **Requirements**: Coq 8.5~8.10
 
 ## What is Dblib?
