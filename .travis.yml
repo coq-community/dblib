@@ -11,19 +11,18 @@ env:
   - NJOBS="2"
   - CONTRIB_NAME="dblib"
   matrix:
-  - COQ_IMAGE="coqorg/coq:8.5"
-  - COQ_IMAGE="coqorg/coq:8.6"
-  - COQ_IMAGE="coqorg/coq:8.7"
-  - COQ_IMAGE="coqorg/coq:8.8"
-  - COQ_IMAGE="coqorg/coq:8.9"
-  - COQ_IMAGE="coqorg/coq:8.10"
-  - COQ_IMAGE="coqorg/coq:dev"
-  # "default" switch: $COMPILER
-  # this config uses: $COMPILER_EDGE (cf. "opam switch" command below)
+  - COQ=8.5
+  - COQ=8.6
+  - COQ=8.7
+  - COQ=8.8
+  - COQ=8.9
+  - COQ=8.10
+  - COQ=dev
   # See https://github.com/coq-community/docker-coq/wiki#supported-tags
 
 install: |
   # Prepare the COQ container
+  COQ_IMAGE="${COQ_IMAGE-coqorg/coq:$COQ}"
   docker pull ${COQ_IMAGE}
   docker run -d -i --init --name=COQ -v ${TRAVIS_BUILD_DIR}:/home/coq/${CONTRIB_NAME} -w /home/coq/${CONTRIB_NAME} ${COQ_IMAGE}
   docker exec COQ /bin/bash --login -c "
