@@ -12,6 +12,8 @@ env:
   - CONTRIB_NAME="dblib"
   matrix:
   - COQ=dev
+  - COQ=8.12
+  - COQ=8.11
   - COQ=8.10
   - COQ=8.9
   - COQ=8.8
