@@ -21,10 +21,11 @@ env:
   - COQ=8.6
   - COQ=8.5
 
-install: |
-  COQ_IMAGE="${COQ_IMAGE-coqorg/coq:$COQ}"
-  docker pull "${COQ_IMAGE}"
-  docker run -d -i --init --name=COQ -v ${TRAVIS_BUILD_DIR}:/home/coq/${PACKAGE} -w /home/coq/${PACKAGE} ${COQ_IMAGE}
+install:
+- echo -e "${ANSI_YELLOW}Initialize OPAM and install dependencies...${ANSI_RESET}" && echo -en 'travis_fold:start:install\\r'
+- docker pull ${COQ_IMAGE-coqorg/coq:$COQ}
+- docker run -d -i --init --name=COQ -v ${TRAVIS_BUILD_DIR}:/home/coq/${PACKAGE} -w /home/coq/${PACKAGE} ${COQ_IMAGE-coqorg/coq:$COQ}
+- |
   docker exec COQ /bin/bash --login -c "
     set -ex
     opam update -y
@@ -34,9 +35,10 @@ install: |
     opam repo list
     opam list
     "
+- echo -en 'travis_fold:end:install\\r'
 
 script:
-- echo -e "${ANSI_YELLOW}Building ${CONTRIB_NAME}...${ANSI_RESET}" && echo -en 'travis_fold:start:script\\r'
+- echo -e "${ANSI_YELLOW}Building ${PACKAGE}...${ANSI_RESET}" && echo -en 'travis_fold:start:script\\r'
 - |
   docker exec COQ /bin/bash --login -c "
     opam install ${PACKAGE} -v -y -j ${NJOBS}
