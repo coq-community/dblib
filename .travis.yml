@@ -9,7 +9,7 @@ services:
 env:
   global:
   - NJOBS=2
-  - PACKAGE=dblib
+  - PACKAGE=coq-dblib
   matrix:
   - COQ=dev
   - COQ=8.12
