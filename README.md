@@ -4,7 +4,7 @@
 
 - **Author**: François Pottier, INRIA. 2013.
 - **License**: GNU GPLv3. See [LICENSE](LICENSE).
-- **Requirements**: Coq 8.5~8.10
+- **Requirements**: Coq 8.5+ (tested on 8.5~8.12 and dev)
 
 ## What is Dblib?
 
