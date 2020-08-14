@@ -8,8 +8,8 @@ services:
 
 env:
   global:
-  - NJOBS="2"
-  - CONTRIB_NAME="dblib"
+  - NJOBS=2
+  - PACKAGE=dblib
   matrix:
   - COQ=dev
   - COQ=8.12
@@ -20,26 +20,28 @@ env:
   - COQ=8.7
   - COQ=8.6
   - COQ=8.5
-  # See https://github.com/coq-community/docker-coq/wiki#supported-tags
 
 install: |
-  # Prepare the COQ container
   COQ_IMAGE="${COQ_IMAGE-coqorg/coq:$COQ}"
   docker pull "${COQ_IMAGE}"
-  docker run -d -i --init --name=COQ -v ${TRAVIS_BUILD_DIR}:/home/coq/${CONTRIB_NAME} -w /home/coq/${CONTRIB_NAME} ${COQ_IMAGE}
+  docker run -d -i --init --name=COQ -v ${TRAVIS_BUILD_DIR}:/home/coq/${PACKAGE} -w /home/coq/${PACKAGE} ${COQ_IMAGE}
   docker exec COQ /bin/bash --login -c "
+    set -ex
     opam update -y
-    opam config list; opam repo list; opam list
+    opam pin add ${PACKAGE} . -y -n -k path
+    opam install ${PACKAGE} -y -j ${NJOBS} --deps-only
+    opam config list
+    opam repo list
+    opam list
     "
 
 script:
 - echo -e "${ANSI_YELLOW}Building ${CONTRIB_NAME}...${ANSI_RESET}" && echo -en 'travis_fold:start:script\\r'
 - |
   docker exec COQ /bin/bash --login -c "
-    sudo chown -R coq:coq /home/coq/${CONTRIB_NAME}
-    make -j ${NJOBS} all
+    opam install ${PACKAGE} -v -y -j ${NJOBS}
     "
 - echo -en 'travis_fold:end:script\\r'
 
 after_script:
-- docker stop COQ  # optional but recommended
+- docker stop COQ
