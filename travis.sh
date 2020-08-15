@@ -10,7 +10,9 @@ function doshow () {
 }
 
 function coq {
-    doshow docker exec COQ bash -c "$1 "'"$@"' "$1" "$@"
+    cmd="$1"
+    shift
+    doshow docker exec COQ bash -c "$cmd "'"$@"' "$cmd" "$@"
 }
 
 function coqsh {
@@ -18,22 +20,22 @@ function coqsh {
 }
 
 function begin {
-    printf 'travis_fold:start:%s\r' "$1"
+    echo -e "travis_fold:start:$1${ANSI_YELLOW}$2${ANSI_CLEAR}"
 }
 
 function end {
-    printf 'travis_fold:end:%s\r' "$1"
+    echo -e "\ntravis_fold:end:$1\r"
 }
 
 function install {
-    begin pull
     COQ_IMAGE="${COQ_IMAGE-coqorg/coq:$COQ}"
+    begin pull "Pull $COQ_IMAGE and start container"
     doshow docker pull "$COQ_IMAGE"
     doshow docker run -d -i --init --name=COQ -v "$TRAVIS_BUILD_DIR:/home/coq/$PACKAGE" -w /home/coq/"$PACKAGE" "$COQ_IMAGE"
+    coqsh "echo 'eval \$(opam env)' >>~/.bashrc"
     end pull
 
-    begin opam-deps
-    coqsh "echo 'eval \$(opam env)' >>~/.bashrc"
+    begin opam-deps "Install OPAM dependencies"
     coq opam update -y
     coq opam pin add "$PACKAGE" . -vynk path
     coq opam install "$PACKAGE" -vyj "$NJOBS" --deps-only
@@ -52,7 +54,4 @@ function after_script {
     doshow docker stop COQ
 }
 
-env
-begin "$1"
 "$@"
-end "$1"
