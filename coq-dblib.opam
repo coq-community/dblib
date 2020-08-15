@@ -17,7 +17,7 @@ The basic idea is as follows:
 
 2. Define a higher-order [traverse] function, which can be thought of as a
    generic, capture-avoiding substitution (CAS) function. By defining
-   [traverse], the client effectively defines the binding structure of terms
+   [traverse], you effectively define the binding structure of terms
 
 3. Prove that [traverse] is well-behaved, i.e., it satisfies half a dozen
    reasonable properties. These proofs are usually trivial, because Dblib
@@ -46,4 +46,5 @@ tags: [
 
 build: [make "-j%{jobs}%"]
 install: [make "install"]
+remove: [make "uninstall"]
 depends: ["coq" {>= "8.5" & < "8.13~" | = "dev"}]

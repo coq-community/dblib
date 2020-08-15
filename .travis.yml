@@ -29,8 +29,8 @@ install:
   docker exec COQ /bin/bash --login -c "
     set -ex
     opam update -y
-    opam pin add ${PACKAGE} . -y -n -k path
-    opam install ${PACKAGE} -y -j ${NJOBS} --deps-only
+    opam pin add ${PACKAGE} . -vynk path
+    opam install ${PACKAGE} -vyj ${NJOBS} --deps-only
     opam config list
     opam repo list
     opam list
@@ -39,10 +39,8 @@ install:
 
 script:
 - echo -e "${ANSI_YELLOW}Building ${PACKAGE}...${ANSI_RESET}" && echo -en 'travis_fold:start:script\\r'
-- |
-  docker exec COQ /bin/bash --login -c "
-    opam install ${PACKAGE} -v -y -j ${NJOBS}
-    "
+- docker exec COQ opam install ${PACKAGE} -vyj ${NJOBS}
+- docker exec COQ opam uninstall ${PACKAGE} -vy
 - echo -en 'travis_fold:end:script\\r'
 
 after_script:
