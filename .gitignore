@@ -1,9 +1,13 @@
 *.glob
 *.vo
+*.vo[ks]
+*.vio
 *.v.d
 *.aux
+.lia.cache
 
 Makefile.coq
+.Makefile.coq.d
 Makefile.coq.conf
 
 coqj
