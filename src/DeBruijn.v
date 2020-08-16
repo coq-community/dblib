@@ -1,5 +1,7 @@
 Set Implicit Arguments.
 Generalizable All Variables.
+Require Import Arith.
+Require Import Lia.
 Require Import Dblib.DblibTactics.
 
 (* ---------------------------------------------------------------------------- *)
@@ -281,9 +283,9 @@ Lemma lift_lift_reversed:
   lift wk k (lift ws s t) = lift ws s (lift wk (k - ws) t).
 Proof.
   intros.
-  replace k with (ws + (k - ws)) by omega.
-  erewrite <- lift_lift by omega.
-  replace (ws + (k - ws) - ws) with (k - ws) by omega.
+  replace k with (ws + (k - ws)) by lia.
+  erewrite <- lift_lift by lia.
+  replace (ws + (k - ws) - ws) with (k - ws) by lia.
   reflexivity.
 Qed.
 
@@ -451,8 +453,8 @@ Lemma traverse_extensional:
 Proof.
   intros.
   eapply traverse_relative with (p := 0).
-  intros m ?. replace (m + 0) with m by omega. eauto.
-  omega.
+  intros m ?. replace (m + 0) with m by lia. eauto.
+  lia.
 Qed.
 
 (* A composition of [traverse] with [traverse_var] simplifies to a single call
@@ -480,7 +482,8 @@ Qed.
 
 Ltac just_do_it :=
   unfold subst, Subst_idx, subst_idx, lift, Lift_idx, var, Var_idx;
-  intros; solve [ dblib_by_cases; eauto with f_equal omega ].
+  intros;
+  dblib_by_cases; eauto with lia.
 
 (* The following two lemmas re-state the definition of [lift] at type [nat]. *)
 
@@ -506,18 +509,18 @@ Create HintDb lift_idx_hints.
   (* more hints to be added later on into this database *)
 
 Ltac lift_idx :=
-  first [ rewrite @lift_idx_recent by solve [ omega | eauto with lift_idx_hints ]
-        | rewrite @lift_idx_old by omega ].
+  first [ rewrite @lift_idx_recent by solve [ lia | eauto with lift_idx_hints ]
+        | rewrite @lift_idx_old by lia ].
 
 Hint Extern 1 => lift_idx : lift_idx.
 
 Ltac lift_idx_in h :=
-  first [ rewrite @lift_idx_recent in h by solve [ omega | eauto with lift_idx_hints ]
-        | rewrite @lift_idx_old in h by omega ].
+  first [ rewrite @lift_idx_recent in h by solve [ lia | eauto with lift_idx_hints ]
+        | rewrite @lift_idx_old in h by lia ].
 
 Ltac lift_idx_all :=
-  first [ rewrite @lift_idx_recent in * by solve [ omega | eauto with lift_idx_hints ]
-        | rewrite @lift_idx_old in * by omega ].
+  first [ rewrite @lift_idx_recent in * by solve [ lia | eauto with lift_idx_hints ]
+        | rewrite @lift_idx_old in * by lia ].
 
 (* This tactic finds an occurrence of [lift _ _ _] at type [nat] and
    examines both cases. *)
@@ -581,23 +584,23 @@ Qed.
 
 Ltac subst_idx :=
   first [
-    rewrite @subst_idx_identity by omega
-  | rewrite @subst_idx_miss_1 by omega
-  | rewrite @subst_idx_miss_2 by omega
+    rewrite @subst_idx_identity by lia
+  | rewrite @subst_idx_miss_1 by lia
+  | rewrite @subst_idx_miss_2 by lia
   ].
 
 Ltac subst_idx_in h :=
   first [
-    rewrite @subst_idx_identity in h by omega
-  | rewrite @subst_idx_miss_1 in h by omega
-  | rewrite @subst_idx_miss_2 in h by omega
+    rewrite @subst_idx_identity in h by lia
+  | rewrite @subst_idx_miss_1 in h by lia
+  | rewrite @subst_idx_miss_2 in h by lia
   ].
 
 Ltac subst_idx_all :=
   first [
-    rewrite @subst_idx_identity in * by omega
-  | rewrite @subst_idx_miss_1 in * by omega
-  | rewrite @subst_idx_miss_2 in * by omega
+    rewrite @subst_idx_identity in * by lia
+  | rewrite @subst_idx_miss_1 in * by lia
+  | rewrite @subst_idx_miss_2 in * by lia
   ].
 
 (* A little lemma: replacing a variable with a variable always yields a
@@ -661,7 +664,7 @@ Lemma recognize_lift:
   lift w (k1 + k2) t.
 Proof.
   intros. subst. simpl.
-  eapply traverse_relative; [ | instantiate (1 := k1); omega ].
+  eapply traverse_relative; [ | instantiate (1 := k1); lia ].
   just_do_it.
 Qed.
 
@@ -814,8 +817,8 @@ Proof.
   rewrite (traverse_traverse_var _ _ _).
   eapply (traverse_extensional _).
   intros. f_equal.
-  rewrite lift_lift by omega.
-  f_equal. omega.
+  rewrite lift_lift by lia.
+  f_equal. lia.
 Qed.
 
 Instance LiftLiftFuse_Traverse:
@@ -829,7 +832,7 @@ Proof.
   rewrite (traverse_traverse_var _ _ _).
   eapply (traverse_extensional _).
   intros. f_equal.
-  rewrite lift_lift_fuse by omega. reflexivity.
+  rewrite lift_lift_fuse by lia. reflexivity.
 Qed.
 
 (* ---------------------------------------------------------------------------- *)
@@ -870,11 +873,11 @@ Lemma recognize_subst:
 Proof.
   intros. subst.
   unfold subst, Subst_Traverse.
-  eapply traverse_relative; [ | instantiate (1 := k1); omega ].
+  eapply traverse_relative; [ | instantiate (1 := k1); lia ].
   intros.
   f_equal.
-  rewrite lift_lift_fuse by omega. reflexivity.
-  omega.
+  rewrite lift_lift_fuse by lia. reflexivity.
+  lia.
 Qed.
 
 (* This tactic recognizes an application of the user's [traverse_term]
@@ -1027,8 +1030,8 @@ Proof.
   rewrite traverse_identifies_var.
   recognize_lift.
   (* This is what must be proven at variables. Tidy it up slightly. *)
-  rewrite lift_lift by omega.
-  replace (l + (w + s)) with (w + (l + s)) by omega. (* optional *)
+  rewrite lift_lift by lia.
+  replace (l + (w + s)) with (w + (l + s)) by lia. (* optional *)
   (* We now recognize a heterogeneous version of [LiftSubst1] at types
      [nat] and [V]. We could make it a separate lemma, but brute force
      is more concise. *)
@@ -1058,8 +1061,8 @@ Proof.
   rewrite traverse_identifies_var.
   recognize_lift.
   (* This is what must be proven at variables. Tidy it up slightly. *)
-  rewrite lift_lift by omega.
-  replace (l + (1 + k)) with (1 + (l + k)) by omega. (* optional *)
+  rewrite lift_lift by lia.
+  replace (l + (1 + k)) with (1 + (l + k)) by lia. (* optional *)
   (* We now recognize a heterogeneous version of [LiftSubst2] at types
      [nat] and [V]. We could make it a separate lemma, but brute force
      is more concise. *)
@@ -1081,9 +1084,9 @@ Proof.
   constructor. intros.
   destruct (le_gt_dec s k); do 2 lift_idx.
   (* Case [s <= k]. *)
-  eapply lift_subst_2. omega.
+  eapply lift_subst_2. lia.
   (* Case [s > k]. *)
-  eapply lift_subst_1. omega.
+  eapply lift_subst_1. lia.
 Qed.
 
 Instance SubstSubst_Traverse:
@@ -1104,13 +1107,13 @@ Proof.
   eapply (traverse_extensional _). intros.
   do 2 recognize_subst.
   (* This is what must be proven at variables. Tidy it up slightly. *)
-  rewrite lift_subst_1 by omega.
+  rewrite lift_subst_1 by lia.
   (* We now recognize a heterogeneous version of [SubstSubst] at types
      [nat] and [V]. We could make it a separate lemma, but brute force
      is more concise. *)
   unfold subst_idx; dblib_by_cases; repeat rewrite subst_var; try solve [ just_do_it ].
     (* The special case [x = l + s + 1] remains. *)
-    subst_idx. rewrite lift_lift by omega. rewrite subst_lift. reflexivity. (* Phew! *)
+    subst_idx. rewrite lift_lift by lia. rewrite subst_lift. reflexivity. (* Phew! *)
 Qed.
 
 Instance Pun1_Traverse:
@@ -1178,7 +1181,7 @@ Lemma closed_increment:
 Proof.
   unfold closed. intros.
   match goal with h: shift _ _ = _ |- _ => rewrite <- h at 1 end.
-  rewrite <- lift_lift by omega.
+  rewrite <- lift_lift by lia.
   congruence. (* amazing, isn't it? *)
 Qed.
 
@@ -1201,10 +1204,10 @@ Proof.
     (* Base case. *)
     assumption.
     (* Inductive case. *)
-    replace (S i + k) with (1 + (i + k)) by omega. eauto using closed_increment with typeclass_instances.
+    replace (S i + k) with (1 + (i + k)) by lia. eauto using closed_increment with typeclass_instances.
   (* Conclusion. *)
   intros j ?.
-  replace j with ((j - k) + k) by omega.
+  replace j with ((j - k) + k) by lia.
   eauto.
 Qed.
 
@@ -1227,7 +1230,7 @@ Proof.
   eauto using lift_zero.
   (* Inductive case. *)
   change (S w) with (1 + w).
-  erewrite <- lift_lift_fuse by (instantiate (1 := j); omega).
+  erewrite <- lift_lift_fuse by (instantiate (1 := j); lia).
   rewrite IHw.
   eapply closed_monotonic; eauto.
 Qed.
@@ -1274,7 +1277,7 @@ Lemma lift_preserves_closed:
 Proof.
   unfold closed. intros.
   change (S k) with (1 + k).
-  rewrite <- lift_lift by omega.
+  rewrite <- lift_lift by lia.
   congruence. (* wow! *)
 Qed.
 
@@ -1290,7 +1293,7 @@ Lemma subst_preserves_closed:
   closed k (subst v 0 t).
 Proof.
   unfold closed. intros.
-  rewrite lift_subst_2 by omega.
+  rewrite lift_subst_2 by lia.
   simpl. change (1 + k) with (S k). congruence. (* wow! *)
 Qed.
 
@@ -1356,7 +1359,7 @@ Ltac construction_closed :=
        [lift_idx] to simplify [shift] away. *)
     try (simpl; lift_idx);
     (* Conclude. *)
-    eauto with omega construction_closed
+    eauto with lia construction_closed
   ].
 
 (* The following hint proves a goal of the form [shift x v = v] when
@@ -1368,7 +1371,7 @@ Hint Extern 1 (shift ?x ?v = ?v) =>
     eapply closed_monotonic; [
       eauto with typeclass_instances (* LiftLift *)
     | construction_closed (* [v] is [k]-closed *)
-    | omega (* [k <= x] *)
+    | lia (* [k <= x] *)
     ]
   ]
 : shift_closed.
@@ -1393,7 +1396,7 @@ Hint Extern 1 (subst ?w ?x ?v = ?v) =>
       eauto with typeclass_instances
     | eauto with typeclass_instances
     | construction_closed
-    | omega
+    | lia
     ]
   ]
 : subst_closed.
@@ -1426,19 +1429,19 @@ Proof.
   constructor. intro. unfold rotate.
   (* We are looking at a subst-lift-subst-lift composition. *)
   (* Permute the central lift/subst pair, to obtain subst-subst-lift-lift. *)
-  rewrite lift_subst_2 by omega.
+  rewrite lift_subst_2 by lia.
   (* Permute the two lifts. *)
-  rewrite <- lift_lift by omega.
+  rewrite <- lift_lift by lia.
   (* Simplify. *)
   rewrite lift_var. simpl.
   (* Permute the two substs. *)
-  rewrite subst_subst by omega.
+  rewrite subst_subst by lia.
   rewrite subst_var.
   rewrite lift_var. subst_idx. simpl.
   (* De-simplify to prepare the next rewriting step. *)
   replace (@var V _ 2) with (shift 1 (@var V _ 1)) by (rewrite lift_var; auto).
   (* Permute the central subst-lift. *)
-  rewrite <- lift_subst_2 by omega.
+  rewrite <- lift_subst_2 by lia.
   (* Identify two puns, and we are done. *)
   rewrite pun_2.
   rewrite pun_2.
@@ -1530,7 +1533,7 @@ Ltac prove_traverse_relative :=
   match goal with |- ?_traverse _ _ _ = ?_traverse _ _ _ =>
     unfold _traverse; fold _traverse
   end;
-  eauto using @traverse_relative with f_equal omega typeclass_instances.
+  eauto using @traverse_relative with f_equal lia typeclass_instances.
 
 Ltac prove_traverse_var_is_identity :=
   intros ? ? t; induction t; intros;
@@ -1560,10 +1563,10 @@ Ltac prove_traverse_var_is_identity :=
 
 Ltac lift_lift_hint :=
   first [
-    rewrite lift_lift by omega; reflexivity
-  | rewrite <- lift_lift by omega; reflexivity
-  | rewrite lift_lift by omega
-  | rewrite <- lift_lift by omega
+    rewrite lift_lift by lia; reflexivity
+  | rewrite <- lift_lift by lia; reflexivity
+  | rewrite lift_lift by lia
+  | rewrite <- lift_lift by lia
   ].
 
 Hint Extern 1 (_ = lift _ _ (lift _ _ _)) => lift_lift_hint : lift_lift.
@@ -1582,14 +1585,14 @@ Hint Extern 1 (_ = subst _ _ _) => subst_lift_hint : subst_lift.
 
 Ltac lift_subst_hint :=
   first [
-    rewrite lift_subst_1 by omega; reflexivity
-  | rewrite lift_subst_2 by omega; reflexivity
-  | rewrite <- lift_subst_1 by omega; reflexivity
-  | rewrite <- lift_subst_2 by omega; reflexivity
-  | rewrite lift_subst_1 by omega
-  | rewrite lift_subst_2 by omega
-  | rewrite <- lift_subst_1 by omega
-  | rewrite <- lift_subst_2 by omega
+    rewrite lift_subst_1 by lia; reflexivity
+  | rewrite lift_subst_2 by lia; reflexivity
+  | rewrite <- lift_subst_1 by lia; reflexivity
+  | rewrite <- lift_subst_2 by lia; reflexivity
+  | rewrite lift_subst_1 by lia
+  | rewrite lift_subst_2 by lia
+  | rewrite <- lift_subst_1 by lia
+  | rewrite <- lift_subst_2 by lia
   ].
 
 Hint Extern 1 (_ = lift _ _ (subst _ _ _)) => lift_subst_hint : lift_subst.
@@ -1603,17 +1606,17 @@ Hint Extern 1
 
 Ltac subst_subst_hint :=
   first [
-    rewrite subst_subst by omega; reflexivity
-  | rewrite <- subst_subst by omega; reflexivity
-  | rewrite subst_subst by omega
-  | rewrite <- subst_subst by omega
+    rewrite subst_subst by lia; reflexivity
+  | rewrite <- subst_subst by lia; reflexivity
+  | rewrite subst_subst by lia
+  | rewrite <- subst_subst by lia
   ].
 
 Hint Extern 1 (_ = subst _ _ (subst _ _ _)) => subst_subst_hint : subst_subst.
 Hint Extern 1 (subst _ _ (subst _ _ _) = _) => subst_subst_hint : subst_subst.
 
 Ltac lift_lift_fuse_hint :=
-  rewrite lift_lift_fuse by omega.
+  rewrite lift_lift_fuse by lia.
 
 Hint Extern 1 (lift _ _ (lift _ _ _) = _) => lift_lift_fuse_hint : lift_lift_fuse.
 Hint Extern 1 (_ = lift _ _ (lift _ _ _)) => lift_lift_fuse_hint : lift_lift_fuse.
@@ -1651,8 +1654,8 @@ Lemma lift_lift_fuse_successor:
   lift wk s (shift s t) = lift (S wk) s t.
 Proof.
   intros.
-  replace (S wk) with (wk + 1) by omega.
-  eapply lift_lift_fuse. omega.
+  replace (S wk) with (wk + 1) by lia.
+  eapply lift_lift_fuse. lia.
 Qed.
 
 Hint Extern 1 (lift ?wk _ _ = lift (S ?wk) _ _) =>
@@ -1683,7 +1686,7 @@ Lemma subst_lift_generalized:
 Proof.
   intros.
   rewrite <- lift_lift_fuse_successor.
-  rewrite lift_lift by omega.
+  rewrite lift_lift by lia.
   rewrite plus_0_r.
   apply subst_lift.
 Qed.

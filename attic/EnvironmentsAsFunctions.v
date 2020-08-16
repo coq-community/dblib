@@ -2,6 +2,7 @@ Set Implicit Arguments.
 Require Import FunctionalExtensionality.
 Require Import DblibTactics.
 Require Import DeBruijn.
+Require Import Lia.
 
 (* ---------------------------------------------------------------------------- *)
 
@@ -78,7 +79,7 @@ Lemma one_plus_x_minus_one_left:
   forall x,
   (1 + x) - 1 = x.
 Proof.
-  intros. omega.
+  intros. lia.
 Qed.
 
 Lemma one_plus_x_minus_one_right:
@@ -86,13 +87,13 @@ Lemma one_plus_x_minus_one_right:
   x > 0 ->
   1 + (x - 1) = x.
 Proof.
-  intros. omega.
+  intros. lia.
 Qed.
 
 Ltac one_plus_x_minus_one :=
   repeat rewrite one_plus_x_minus_one_left;
-  repeat rewrite one_plus_x_minus_one_right by omega.
-  (* I tried [autorewrite with ... using omega]; it does not work. *)
+  repeat rewrite one_plus_x_minus_one_right by lia.
+  (* I tried [autorewrite with ... using lia]; it does not work. *)
 
 (* ---------------------------------------------------------------------------- *)
 
@@ -146,23 +147,23 @@ Lemma lookup_shift_insert:
   lookup (shift y x) (insert y a e) = lookup x e.
 Proof.
   intros. destruct_lift_idx.
-  rewrite lookup_insert_old by omega. f_equal. omega.
-  rewrite lookup_insert_recent by omega. reflexivity.
+  rewrite lookup_insert_old by lia. f_equal. lia.
+  rewrite lookup_insert_recent by lia. reflexivity.
 Qed.
 
 Ltac lookup_insert :=
   first [
-    rewrite lookup_insert_bingo by omega
-  | rewrite lookup_insert_old by omega; one_plus_x_minus_one
-  | rewrite lookup_insert_recent by omega
+    rewrite lookup_insert_bingo by lia
+  | rewrite lookup_insert_old by lia; one_plus_x_minus_one
+  | rewrite lookup_insert_recent by lia
   | rewrite lookup_shift_insert
   ].
 
 Ltac lookup_insert_all :=
   first [
-    rewrite lookup_insert_bingo in * by omega
-  | rewrite lookup_insert_old in * by omega; one_plus_x_minus_one
-  | rewrite lookup_insert_recent in * by omega
+    rewrite lookup_insert_bingo in * by lia
+  | rewrite lookup_insert_old in * by lia; one_plus_x_minus_one
+  | rewrite lookup_insert_recent in * by lia
   | rewrite lookup_shift_insert in *
   ].
 
@@ -195,18 +196,18 @@ Lemma insert_insert:
   k <= s ->
   insert k a (insert s b e) = insert (1 + s) b (insert k a e).
 Proof.
-  unfold insert. intros. extensionality y. dblib_by_cases; eauto with f_equal omega.
+  unfold insert. intros. extensionality y. dblib_by_cases; eauto with f_equal lia.
 Qed.
 
 (* Attempting to rewrite in both directions may seem redundant, because of the
-   symmetry of the law [insert_insert]. It is not: because [omega] fails in
+   symmetry of the law [insert_insert]. It is not: because [lia] fails in
    the presence of meta-variables, rewriting in one direction may be possible
    while the other direction fails. *)
 
 Ltac insert_insert :=
   first [
-    rewrite insert_insert by omega; reflexivity
-  | rewrite <- insert_insert by omega; reflexivity
+    rewrite insert_insert by lia; reflexivity
+  | rewrite <- insert_insert by lia; reflexivity
   ].
 
 Hint Extern 1 (insert _ _ (insert _ _ _) = _) =>
@@ -226,7 +227,7 @@ Lemma remove_insert:
   remove x (insert x a e) = e.
 Proof.
   intros. unfold remove, insert. extensionality y.
-  dblib_by_cases; eauto with f_equal omega.
+  dblib_by_cases; eauto with f_equal lia.
 Qed.
 
 Lemma insert_remove_bingo:
@@ -236,7 +237,7 @@ Lemma insert_remove_bingo:
   insert y a (remove x e) = e.
 Proof.
   unfold lookup, remove, insert. intros. extensionality z.
-  dblib_by_cases; eauto with f_equal omega; congruence.
+  dblib_by_cases; eauto with f_equal lia; congruence.
 Qed.
 
 Lemma insert_remove_recent:
@@ -245,7 +246,7 @@ Lemma insert_remove_recent:
   insert y a (remove x e) = remove (1 + x) (insert y a e).
 Proof.
   intros. unfold insert, remove. extensionality z.
-  dblib_by_cases; eauto with f_equal omega.
+  dblib_by_cases; eauto with f_equal lia.
 Qed.
 
 Lemma insert_remove_old:
@@ -254,15 +255,15 @@ Lemma insert_remove_old:
   insert y a (remove x e) = remove x (insert (1 + y) a e).
 Proof.
   intros. unfold insert, remove. extensionality z.
-  dblib_by_cases; eauto with f_equal omega.
+  dblib_by_cases; eauto with f_equal lia.
 Qed.
 
 Ltac insert_remove :=
   first [
-    rewrite insert_remove_recent by omega; reflexivity
-  | rewrite insert_remove_old by omega; reflexivity
-  | rewrite <- insert_remove_recent by omega; reflexivity
-  | rewrite <- insert_remove_old by omega; reflexivity
+    rewrite insert_remove_recent by lia; reflexivity
+  | rewrite insert_remove_old by lia; reflexivity
+  | rewrite <- insert_remove_recent by lia; reflexivity
+  | rewrite <- insert_remove_old by lia; reflexivity
   ].
 
 Hint Extern 1 (remove _ (insert _ _ _) = insert _ _ (remove _ _)) =>
@@ -289,7 +290,7 @@ Lemma lookup_remove_old:
   y >= x ->
   lookup y (remove x e) = lookup (1 + y) e.
 Proof.
-  intros. unfold lookup, remove. dblib_by_cases; eauto with f_equal omega.
+  intros. unfold lookup, remove. dblib_by_cases; eauto with f_equal lia.
 Qed.
 
 Lemma lookup_remove_recent:
@@ -297,13 +298,13 @@ Lemma lookup_remove_recent:
   y < x ->
   lookup y (remove x e) = lookup y e.
 Proof.
-  intros. unfold lookup, remove. dblib_by_cases; eauto with f_equal omega.
+  intros. unfold lookup, remove. dblib_by_cases; eauto with f_equal lia.
 Qed.
 
 Ltac lookup_remove :=
   first [
-    rewrite lookup_remove_old by omega; one_plus_x_minus_one
-  | rewrite lookup_remove_recent by omega
+    rewrite lookup_remove_old by lia; one_plus_x_minus_one
+  | rewrite lookup_remove_recent by lia
   ].
 
 Hint Extern 1 (lookup _ (remove _ _) = _) =>
@@ -318,7 +319,7 @@ Lemma map_insert:
   forall A f x (a : A) e,
   map f (insert x a e) = insert x (f a) (map f e).
 Proof.
-  unfold map, insert. intros. extensionality y. dblib_by_cases; eauto with f_equal omega.
+  unfold map, insert. intros. extensionality y. dblib_by_cases; eauto with f_equal lia.
 Qed.
 
 Ltac map_insert :=
@@ -419,7 +420,7 @@ Lemma length_insert:
   length e k ->
   length (insert 0 a e) (1 + k).
 Proof.
-  unfold length; intros. lookup_insert. eauto with omega.
+  unfold length; intros. lookup_insert. eauto with lia.
 Qed.
 
 Hint Resolve length_empty length_insert : length.
@@ -455,7 +456,7 @@ Lemma agree_empty:
   forall A (e : env A),
   agree (@empty _) e 0.
 Proof.
-  unfold agree. intros. elimtype False. omega.
+  unfold agree. intros. elimtype False. lia.
 Qed.
 
 (* If two environments that agree up to [k] are extended with a new variable,
@@ -468,7 +469,7 @@ Lemma agree_insert:
   x <= k ->
   agree (insert x a e1) (insert x a e2) (1 + k).
 Proof.
-  unfold agree, lookup, insert. intros. dblib_by_cases; eauto with omega.
+  unfold agree, lookup, insert. intros. dblib_by_cases; eauto with lia.
 Qed.
 
 Hint Resolve agree_below agree_empty agree_insert : agree.
@@ -501,8 +502,8 @@ Lemma length_concat:
   length (concat e1 e2) n.
 Proof.
   induction e2; simpl; intros.
-  replace n with n1 by omega. assumption.
-  eauto using length_insert with omega.
+  replace n with n1 by lia. assumption.
+  eauto using length_insert with lia.
 Qed.
 
 Hint Resolve length_concat : length construction_closed.
@@ -517,8 +518,8 @@ Lemma agree_concat:
   agree (concat e1 e) (concat e2 e) n.
 Proof.
   induction e; simpl; intros.
-  replace n with k by omega. assumption.
-  eauto using agree_insert with omega.
+  replace n with k by lia. assumption.
+  eauto using agree_insert with lia.
 Qed.
 
 Hint Resolve agree_concat : agree.
@@ -532,9 +533,9 @@ Lemma insert_concat:
   insert nx a (concat e1 e2) = concat (insert x a e1) e2.
 Proof.
   induction n; intros; subst; destruct e2; simpl in *; try discriminate; auto.
-  rewrite insert_insert by omega.
+  rewrite insert_insert by lia.
   erewrite <- (IHn (1 + x)) by first [ congruence | eauto ].
-  eauto with f_equal omega.
+  eauto with f_equal lia.
 Qed.
 
 (* [replicate n a] is a list of [n] elements, all of which are

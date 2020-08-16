@@ -1,4 +1,6 @@
 Set Implicit Arguments.
+Require Import Lia.
+Require Import Arith.
 Require Export Coq.Program.Equality.
 From Dblib Require Import DblibTactics DeBruijn Environments.
 
@@ -198,7 +200,7 @@ Lemma j_index_monotonic:
   m >= n ->
   j m E t T.
 Proof.
-  induction 1; eauto with j omega.
+  induction 1; eauto with j lia.
 Qed.
 
 (* ---------------------------------------------------------------------------- *)
@@ -249,11 +251,11 @@ Proof.
   induction 1; intros; subst; simpl_subst_goal;
   try solve [
     econstructor;
-    eauto using term_weakening, type_weakening with insert_insert map_insert omega
+    eauto using term_weakening, type_weakening with insert_insert map_insert lia
   ].
   (* JVar. *)
   unfold subst_idx. dblib_by_cases; lookup_insert_all;
-  eauto using j_index_monotonic with j omega.
+  eauto using j_index_monotonic with j lia.
 Qed.
 
 Lemma type_substitution:
@@ -276,7 +278,7 @@ Lemma inversion_JAbs:
   exists m,
   j m (insert 0 T1 E) t T2.
 Proof.
-  introq. intro h. dependent destruction h; try solve [ omega ].
+  introq. intro h. dependent destruction h; try solve [ lia ].
   (* JAbs *)
   eexists. eassumption.
 Qed.
@@ -288,7 +290,7 @@ Lemma inversion_JTyAbs:
      we have a variable or an application, which we cannot deal with. *)
   j 0 (map (shift 0) E) (TAbs t) T.
 Proof.
-  introq. intro h. dependent destruction h; try solve [ omega ].
+  introq. intro h. dependent destruction h; try solve [ lia ].
   (* JTyAbs *)
   assumption.
 Qed.
@@ -362,4 +364,3 @@ Proof.
   (* JTyApp *)
   tp_ih. eauto with j.
 Qed.
-
