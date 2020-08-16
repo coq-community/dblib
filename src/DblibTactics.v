@@ -1,5 +1,7 @@
 Set Implicit Arguments.
-Require Export Omega.
+Require Import Compare_dec.
+Require Import Peano_dec.
+Require Import Lia.
 
 (* A hint for invoking [f_equal] as part of [eauto] search. *)
 
@@ -7,14 +9,13 @@ Hint Extern 1 => f_equal : f_equal.
 
 (* Hints for invoking omega on arithmetic subgoals. *)
 
-Hint Extern 1 (_ = _ :> nat) => reflexivity : omega.
-
-Hint Extern 1 (_ = _ :> nat) => omega : omega.
-Hint Extern 1 (_ <> _ :> nat) => omega : omega.
-Hint Extern 1 (_ < _) => omega : omega.
-Hint Extern 1 (_ > _) => omega : omega.
-Hint Extern 1 (_ <= _) => omega : omega.
-Hint Extern 1 (_ >= _) => omega : omega.
+Hint Extern 1 (_ = _ :> nat) => reflexivity : lia.
+Hint Extern 3 (_ = _ :> nat) => lia : lia.
+Hint Extern 3 (_ <> _ :> nat) => lia : lia.
+Hint Extern 3 (_ < _) => lia : lia.
+Hint Extern 3 (_ > _) => lia : lia.
+Hint Extern 3 (_ <= _) => lia : lia.
+Hint Extern 3 (_ >= _) => lia : lia.
 
 (* Dealing with integer comparisons. *)
 
@@ -39,5 +40,5 @@ Ltac dblib_inspect_cases :=
   end.
 
 Ltac dblib_by_cases :=
-  repeat dblib_inspect_cases; try solve [ intros; exfalso; omega ]; intros.
+  repeat dblib_inspect_cases; try solve [ intros; exfalso; lia ]; intros.
 

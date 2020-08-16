@@ -309,7 +309,7 @@ Lemma j_agree:
   length E1 <= k ->
   j E2 t T.
 Proof.
-  induction 1; intros; eauto with j length agree omega.
+  induction 1; intros; eauto with j length agree lia.
 Qed.
 
 Lemma j_empty:

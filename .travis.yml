@@ -18,8 +18,6 @@ env:
   - COQ=8.9
   - COQ=8.8
   - COQ=8.7
-  - COQ=8.6
-  - COQ=8.5
 
 install:
 - ./travis.sh install
