@@ -1,10 +1,10 @@
-[![Build Status](https://travis-ci.org/coq-community/dblib.svg?branch=master)](https://travis-ci.org/coq-community/dblib)
+[![Build](https://github.com/coq-community/dblib/workflows/Build/badge.svg)](https://github.com/coq-community/dblib/actions?query=workflow%3ABuild)
 
 # Dblib
 
 - **Author**: François Pottier, INRIA. 2013.
 - **License**: GNU GPLv3. See [LICENSE](LICENSE).
-- **Requirements**: Coq 8.5+ (tested on 8.5~8.12 and dev)
+- **Requirements**: Coq 8.7+ (tested on 8.7~8.12 and dev)
 
 ## What is Dblib?
 
