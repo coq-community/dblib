@@ -22,3 +22,20 @@ jobs:
           opam_file: 'coq-dblib.opam'
           coq_version: ${{ matrix.coq }}
           ocaml_version: ${{ matrix.ocaml }}
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    strategy:
+      matrix:
+        coq: ['dev', '8.12', '8.11', '8.10', '8.9', '8.8', '8.7']
+        ocaml: ['4.09-flambda', '4.07-flambda', 'minimal']
+        exclude:
+          - coq: '8.7'
+            ocaml: '4.09-flambda'
+      max-parallel: 20
+      fail-fast: false
+
+    steps:
+      - run: opam install coq-dblib
+      - run: cd tests && make
