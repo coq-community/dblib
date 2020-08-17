@@ -1,4 +1,4 @@
-[![Build](https://github.com/coq-community/dblib/workflows/Build/badge.svg)](https://github.com/coq-community/dblib/actions?query=workflow%3ABuild)
+[![CI](https://github.com/coq-community/dblib/workflows/CI/badge.svg)](https://github.com/coq-community/dblib/actions?query=workflow%3ACI)
 
 # Dblib
 
