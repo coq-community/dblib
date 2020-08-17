@@ -11,7 +11,7 @@ clean: Makefile.coq
 Makefile.coq: _CoqProject
 	$(COQBIN)coq_makefile -f _CoqProject -o Makefile.coq
 
-.DEFAULT: Makefile.coq
+%: Makefile.coq
 	$(MAKE) -f Makefile.coq $@
 
 .PHONY: all clean tests
