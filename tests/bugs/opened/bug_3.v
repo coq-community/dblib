@@ -80,13 +80,13 @@ Section anonymous_traverse.
   Lemma Traverse_term_functorial : @TraverseFunctorial term _ term _.
   Proof.
     constructor.
-    Fail prove_traverse_functorial.
+    prove_traverse_functorial.
   Abort.
 
   Instance TraverseRelative_term : @TraverseRelative term term _.
   Proof.
     constructor.
-    Fail prove_traverse_relative.
+    prove_traverse_relative.
   Abort.
 
   Instance TraverseIdentifiesVar_term : @TraverseIdentifiesVar term _ _.
@@ -98,6 +98,6 @@ Section anonymous_traverse.
   Instance TraverseVarIsIdentity_term : @TraverseVarIsIdentity term _ term _.
   Proof.
     constructor.
-    Fail prove_traverse_var_is_identity.
+    prove_traverse_var_is_identity.
   Abort.
 End anonymous_traverse.
