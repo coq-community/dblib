@@ -1,3 +1,5 @@
+*.log
+
 *.glob
 *.vo
 *.vo[ks]
