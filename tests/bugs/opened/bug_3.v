@@ -49,7 +49,8 @@ Section named_traverse.
     prove_traverse_var_is_identity.
   Qed.
 End named_traverse.
-Undo.
+
+Reset Initial.
 
 Section anonymous_traverse.
   From Dblib Require Import DeBruijn DblibTactics.
@@ -74,7 +75,8 @@ Section anonymous_traverse.
 
   Instance TraverseVarInjective_term : @TraverseVarInjective term _ term _.
   Proof.
-    constructor. prove_traverse_var_injective.
+    constructor.
+    prove_traverse_var_injective.
   Qed.
 
   Lemma Traverse_term_functorial : @TraverseFunctorial term _ term _.
