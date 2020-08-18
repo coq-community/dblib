@@ -59,13 +59,9 @@ SUBSYSTEMS := $(VSUBSYSTEMS)
 #######################################################################
 
 .DELETE_ON_ERROR:
-.PHONY: all run clean $(SUBSYSTEMS)
+.PHONY: run clean $(SUBSYSTEMS)
 
-all: run
-	$(MAKE) report
-
-run: $(SUBSYSTEMS)
-bugs: $(BUGS)
+run: $(SUBSYSTEMS) report
 
 clean:
 	rm -f trace .nia.cache .lia.cache output/MExtraction.out
@@ -94,16 +90,13 @@ $(foreach S,$(VSUBSYSTEMS),$(eval $(call vdeps,$(S))))
 
 summary_dir = echo $(1); find $(2) -name '*.log' -print0 | xargs -0 -n 1 tail -n1 | sort
 
-.PHONY: report summary summary.log
+.PHONY: report summary.log
 
 report: summary.log
 	$(HIDE)bash report.sh
 
 summary.log:
 	$(SHOW) BUILDING SUMMARY FILE
-	$(HIDE)$(MAKE) --quiet summary > "$@"
-
-summary:
 	@{ \
 	  $(call summary_dir, "Bugs tests", bugs); \
 	  nb_success=`find . -name '*.log' -exec tail -n2 '{}' \; | grep -e $(log_success) | wc -l`; \
@@ -113,7 +106,7 @@ summary:
 	  percentage=`expr 100 \* $$nb_success / $$nb_tests_nonzero`; \
 	  echo; \
 	  echo "$$nb_success tests passed over $$nb_tests, i.e. $$percentage %"; \
-	}
+	} > "$@"
 
 #######################################################################
 # Regression (and progression) tests
