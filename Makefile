@@ -2,7 +2,7 @@ all: Makefile.coq
 	$(MAKE) -f Makefile.coq all
 
 tests:
-	PRINT_LOGS=1 $(MAKE) -C tests
+	$(MAKE) -C tests
 
 clean: Makefile.coq
 	$(MAKE) -f Makefile.coq clean

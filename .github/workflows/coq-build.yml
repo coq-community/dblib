@@ -34,7 +34,7 @@ jobs:
               opam list
             endGroup
             startGroup Build
-              opam install -y -v -j 2 --with-test $PACKAGE
+              PRINT_LOGS=1 VERBOSE=1 opam install -y -v -j 2 --with-test $PACKAGE
               opam list
             endGroup
             startGroup Uninstallation test
