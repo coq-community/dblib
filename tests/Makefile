@@ -4,6 +4,9 @@
 # Variables
 #######################################################################
 
+SHELL := /bin/bash
+
+PACKAGE := coq-dblib
 COQEXTRAFLAGS ?=
 COQFLAGS ?= $(COQEXTRAFLAGS)
 LIBS ?= $(shell cat _CoqProject)
@@ -37,6 +40,7 @@ get_coq_prog_args_in_parens = $(subst $(SINGLE_QUOTE),,$(if $(call get_coq_prog_
 
 # keep these synced with test-suite/save-logs.sh
 log_success = "==========> SUCCESS <=========="
+log_warning = "==========> WARNING <=========="
 log_segfault = "==========> FAILURE <=========="
 log_anomaly = "==========> FAILURE <=========="
 log_failure = "==========> FAILURE <=========="
@@ -92,7 +96,7 @@ summary.log:
 	$(SHOW) BUILDING SUMMARY FILE
 	@{ \
 	  $(call summary_dir, "Bugs tests", bugs); \
-	  nb_success=`find . -name '*.log' -exec tail -n2 '{}' \; | grep -e $(log_success) | wc -l`; \
+	  nb_success=`find . -name '*.log' -exec tail -n2 '{}' \; | grep -e $(log_success) -e $(log_warning) | wc -l`; \
 	  nb_failure=`find . -name '*.log' -exec tail -n2 '{}' \; | grep -e $(log_failure) | wc -l`; \
 	  nb_tests=`expr $$nb_success + $$nb_failure`; \
 	  nb_tests_nonzero=`[ $$nb_tests -gt 0 ] && echo $$nb_tests || echo 1` \

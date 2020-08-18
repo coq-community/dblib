@@ -12,7 +12,7 @@ rm -rf "$SAVEDIR"
 mkdir "$SAVEDIR"
 
 FAILED=$(mktemp /tmp/coq-check-XXXXXX)
-find . '(' -name '*.log' -exec grep -q -F "Error!" '{}' ';' -print0 ')' > "$FAILED"
+find . '(' -name '*.log' -exec grep -q -F -e "Error!" -e "Warning: " '{}' ';' -print0 ')' > "$FAILED"
 
 rsync -a --from0 --files-from="$FAILED" . "$SAVEDIR"
 cp summary.log "$SAVEDIR"/

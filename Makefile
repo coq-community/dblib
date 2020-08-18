@@ -6,6 +6,7 @@ tests:
 
 clean: Makefile.coq
 	$(MAKE) -f Makefile.coq clean
+	$(MAKE) -C tests clean
 	rm -f Makefile.coq
 
 Makefile.coq: _CoqProject
