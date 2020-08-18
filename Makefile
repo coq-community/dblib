@@ -1,14 +1,18 @@
 all: Makefile.coq
-	+make -f Makefile.coq all
+	$(MAKE) -f Makefile.coq all
+
+tests:
+	$(MAKE) -C tests
 
 clean: Makefile.coq
-	+make -f Makefile.coq clean
+	$(MAKE) -f Makefile.coq clean
+	$(MAKE) -C tests clean
 	rm -f Makefile.coq
 
 Makefile.coq: _CoqProject
 	$(COQBIN)coq_makefile -f _CoqProject -o Makefile.coq
 
-.DEFAULT: Makefile.coq
-	+make -f Makefile.coq $@
+%: Makefile.coq
+	$(MAKE) -f Makefile.coq $@
 
-.PHONY: all clean
+.PHONY: all clean tests
