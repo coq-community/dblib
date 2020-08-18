@@ -4,13 +4,15 @@
 # Variables
 #######################################################################
 
-COQEXTRAFLAGS?=
-COQFLAGS?=$(COQEXTRAFLAGS)
+COQEXTRAFLAGS ?=
+COQFLAGS ?= $(COQEXTRAFLAGS)
+LIBS ?= $(shell cat _CoqProject)
+PREREQUISITES := $(shell find $(shell echo $(LIBS) | sed -E 's/^-. ([^ ]+) .+/\1/') -regex '.*\.vo?')
 
-coqc := coqc -q -R prerequisite TestSuite $(COQFLAGS)
-coqchk := coqchk -R prerequisite TestSuite
+coqc := coqc -q $(LIBS) $(COQFLAGS)
+coqchk := coqchk $(LIBS)
 coqdoc := coqdoc
-coqtop := coqtop -q -test-mode -R prerequisite TestSuite
+coqtop := coqtop -q -test-mode $(LIBS)
 coqtopbyte := coqtop.byte -q
 
 coqc_interactive := $(coqc) -test-mode -async-proofs-cache force
@@ -124,7 +126,7 @@ summary:
 # All files are assumed to have <# of the bug>.v as a name
 
 # Opened bugs that should not fail
-$(addsuffix .log,$(wildcard bugs/opened/*.v)): %.v.log: %.v
+$(addsuffix .log,$(wildcard bugs/opened/*.v)): %.v.log: %.v $(PREREQUISITES)
 	@echo "TEST      $<  $(call get_coq_prog_args_in_parens,"$<")"
 	$(HIDE){ \
 	  echo $(call log_intro,$<); \
@@ -146,7 +148,7 @@ $(addsuffix .log,$(wildcard bugs/opened/*.v)): %.v.log: %.v
 	} > "$@"
 
 # Closed bugs that should succeed
-$(addsuffix .log,$(wildcard bugs/closed/*.v)): %.v.log: %.v
+$(addsuffix .log,$(wildcard bugs/closed/*.v)): %.v.log: %.v $(PREREQUISITES)
 	@echo "TEST      $< $(call get_coq_prog_args_in_parens,"$<")"
 	$(HIDE){ \
 	  echo $(call log_intro,$<); \
@@ -166,7 +168,7 @@ $(addsuffix .log,$(wildcard bugs/closed/*.v)): %.v.log: %.v
 #######################################################################
 
 # Success tests
-$(addsuffix .log,$(wildcard ssr/*.v success/*.v micromega/*.v modules/*.v primitive/*/*.v ltac2/*.v)): %.v.log: %.v $(PREREQUISITELOG)
+$(addsuffix .log,$(wildcard ssr/*.v success/*.v micromega/*.v modules/*.v primitive/*/*.v ltac2/*.v)): %.v.log: %.v $(PREREQUISITES)
 	@echo "TEST      $< $(call get_coq_prog_args_in_parens,"$<")"
 	$(HIDE){ \
 	  opts="$(if $(findstring modules/,$<),-R modules Mods)"; \
@@ -192,7 +194,7 @@ $(addsuffix .log,$(wildcard ssr/*.v success/*.v micromega/*.v modules/*.v primit
 	} > "$(shell dirname $<)/$(shell basename $< .v).chk.log"; fi
 
 # Failure tests
-$(addsuffix .log,$(wildcard failure/*.v)): %.v.log: %.v $(PREREQUISITELOG)
+$(addsuffix .log,$(wildcard failure/*.v)): %.v.log: %.v $(PREREQUISITES)
 	@echo "TEST      $< $(call get_coq_prog_args_in_parens,"$<")"
 	$(HIDE){ \
 	  echo $(call log_intro,$<); \
