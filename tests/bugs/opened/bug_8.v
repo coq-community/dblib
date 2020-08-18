@@ -77,8 +77,8 @@ Module anonymous_traverse.
 
   Lemma Traverse_term_functorial : @TraverseFunctorial term _ term _.
     constructor.
-    Fail prove_traverse_functorial.
-  Abort.
+    prove_traverse_functorial.
+  Qed.
 
   Instance TraverseRelative_term : @TraverseRelative term term _.
     constructor.

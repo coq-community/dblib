@@ -1509,14 +1509,7 @@ Ltac prove_traverse_var_injective :=
 Ltac prove_traverse_functorial :=
   let t := fresh "t" in
   intros ? ? t; induction t; intros;
-  (* We do not use [simpl] because it is too brutal. We just want to unfold
-     the definition of [traverse], exposing a call to the user's [_traverse],
-     and then perform one step of reduction, exploiting the user's definition
-     of [_traverse] as a Fixpoint. *)
-  simpl (@traverse _ _ _) at 1 2 3; (* not 4! *)
-  match goal with |- ?_traverse _ _ (?_traverse _ _ _) = ?_traverse _ _ _ =>
-    unfold _traverse; fold _traverse
-  end;
+  simpl;
   f_equal; eauto using @traverse_functorial with typeclass_instances.
 
 Ltac prove_traverse_relative :=
