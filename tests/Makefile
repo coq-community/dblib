@@ -64,16 +64,9 @@ SUBSYSTEMS := $(VSUBSYSTEMS)
 run: $(SUBSYSTEMS) report
 
 clean:
-	rm -f trace .nia.cache .lia.cache output/MExtraction.out
+	rm -f trace output/MExtraction.out
 	rm -f vos/Makefile vos/Makefile.conf
-	$(SHOW) 'RM        <**/*.stamp> <**/*.vo> <**/*.vio> <**/*.log> <**/*.glob>'
-	$(HIDE)find . \( \
-	  -name '*.stamp' -o -name '*.vo' -o -name '*.vio' -o -name '*.vos' -o -name '*.vok' -o -name '*.log' -o -name '*.glob' \
-	  \) -exec rm -f {} +
-	$(SHOW) 'RM        <**/*.cmx> <**/*.cmi> <**/*.o> <**/*.test>'
-	$(HIDE)find unit-tests \( \
-	  -name '*.cmx' -o -name '*.cmi' -o -name '*.o' -o -name '*.test' \
-	  \) -exec rm -f {} +
+	find . \( -regex '.*\.\(stamp\|vo\|vio\|vos\|vok\|log\|glob\|aux\|[ln][ir]a\.cache\)' \) -exec rm -f {} +
 
 #######################################################################
 # Per-subsystem targets
