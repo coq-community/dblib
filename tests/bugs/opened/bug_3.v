@@ -1,105 +1,109 @@
-Section named_traverse.
-  From Dblib Require Import DeBruijn DblibTactics.
+(* ************************************************ *)
+(* Defining [traverse] as a global definition works *)
+(* ************************************************ *)
 
-  Inductive term : Set :=
-  | TAbs : term -> term
-  | TApp : term -> term -> term
-  | TVar : nat -> term
-  .
+From Dblib Require Import DeBruijn DblibTactics.
 
-  Instance Var_term : Var term := {var := TVar}.
+Inductive term : Set :=
+| TAbs : term -> term
+| TApp : term -> term -> term
+| TVar : nat -> term
+.
 
-  Fixpoint traverse_term (f : nat -> nat -> term) (l : nat) (e : term) : term :=
-    match e with
-    | TAbs e => TAbs (traverse_term f (1 + l) e)
-    | TApp e1 e2 => TApp (traverse_term f l e1) (traverse_term f l e2)
-    | TVar x => f l x
-    end.
+Instance Var_term : Var term := {var := TVar}.
 
-  Instance Traverse_term : Traverse term term :=
-    {traverse := traverse_term}.
+Fixpoint traverse_term (f : nat -> nat -> term) (l : nat) (e : term) : term :=
+  match e with
+  | TAbs e => TAbs (traverse_term f (1 + l) e)
+  | TApp e1 e2 => TApp (traverse_term f l e1) (traverse_term f l e2)
+  | TVar x => f l x
+  end.
 
-  Instance TraverseVarInjective_term : @TraverseVarInjective term _ term _.
-  Proof.
-    constructor.
-    prove_traverse_var_injective.
-  Qed.
+Instance Traverse_term : Traverse term term :=
+  {traverse := traverse_term}.
 
-  Lemma Traverse_term_functorial : @TraverseFunctorial term _ term _.
-  Proof.
-    constructor.
-    prove_traverse_functorial.
-  Qed.
+Instance TraverseVarInjective_term : @TraverseVarInjective term _ term _.
+Proof.
+  constructor.
+  prove_traverse_var_injective.
+Qed.
 
-  Instance TraverseRelative_term : @TraverseRelative term term _.
-  Proof.
-    constructor.
-    prove_traverse_relative.
-  Qed.
+Lemma Traverse_term_functorial : @TraverseFunctorial term _ term _.
+Proof.
+  constructor.
+  prove_traverse_functorial.
+Qed.
 
-  Instance TraverseIdentifiesVar_term : @TraverseIdentifiesVar term _ _.
-  Proof.
-    constructor.
-    prove_traverse_identifies_var.
-  Qed.
+Instance TraverseRelative_term : @TraverseRelative term term _.
+Proof.
+  constructor.
+  prove_traverse_relative.
+Qed.
 
-  Instance TraverseVarIsIdentity_term : @TraverseVarIsIdentity term _ term _.
-  Proof.
-    constructor.
-    prove_traverse_var_is_identity.
-  Qed.
-End named_traverse.
+Instance TraverseIdentifiesVar_term : @TraverseIdentifiesVar term _ _.
+Proof.
+  constructor.
+  prove_traverse_identifies_var.
+Qed.
+
+Instance TraverseVarIsIdentity_term : @TraverseVarIsIdentity term _ term _.
+Proof.
+  constructor.
+  prove_traverse_var_is_identity.
+Qed.
 
 Reset Initial.
 
-Section anonymous_traverse.
-  From Dblib Require Import DeBruijn DblibTactics.
+(* ************************************** *)
+(* Defining [traverse] as anonymous fails *)
+(* ************************************** *)
 
-  Inductive term : Set :=
-  | TAbs : term -> term
-  | TApp : term -> term -> term
-  | TVar : nat -> term
-  .
+From Dblib Require Import DeBruijn DblibTactics.
 
-  Instance Var_term : Var term := {var := TVar}.
+Inductive term : Set :=
+| TAbs : term -> term
+| TApp : term -> term -> term
+| TVar : nat -> term
+.
 
-  Instance Traverse_term : Traverse term term :=
-    {traverse :=
-       fix traverse_term (f : nat -> nat -> term) (l : nat) (e : term) : term :=
-         match e with
-         | TAbs e => TAbs (traverse_term f (1 + l) e)
-         | TApp e1 e2 => TApp (traverse_term f l e1) (traverse_term f l e2)
-         | TVar x => f l x
-         end
-    }.
+Instance Var_term : Var term := {var := TVar}.
 
-  Instance TraverseVarInjective_term : @TraverseVarInjective term _ term _.
-  Proof.
-    constructor.
-    prove_traverse_var_injective.
-  Qed.
+Instance Traverse_term : Traverse term term :=
+  {traverse :=
+      fix traverse_term (f : nat -> nat -> term) (l : nat) (e : term) : term :=
+        match e with
+        | TAbs e => TAbs (traverse_term f (1 + l) e)
+        | TApp e1 e2 => TApp (traverse_term f l e1) (traverse_term f l e2)
+        | TVar x => f l x
+        end
+  }.
 
-  Lemma Traverse_term_functorial : @TraverseFunctorial term _ term _.
-  Proof.
-    constructor.
-    Fail prove_traverse_functorial.
-  Abort.
+Instance TraverseVarInjective_term : @TraverseVarInjective term _ term _.
+Proof.
+  constructor.
+  prove_traverse_var_injective.
+Qed.
 
-  Instance TraverseRelative_term : @TraverseRelative term term _.
-  Proof.
-    constructor.
-    Fail prove_traverse_relative.
-  Abort.
+Lemma Traverse_term_functorial : @TraverseFunctorial term _ term _.
+Proof.
+  constructor.
+  Fail prove_traverse_functorial.
+Abort.
 
-  Instance TraverseIdentifiesVar_term : @TraverseIdentifiesVar term _ _.
-  Proof.
-    constructor.
-    prove_traverse_identifies_var.
-  Qed.
+Instance TraverseRelative_term : @TraverseRelative term term _.
+Proof.
+  constructor.
+  Fail prove_traverse_relative.
+Abort.
 
-  Instance TraverseVarIsIdentity_term : @TraverseVarIsIdentity term _ term _.
-  Proof.
-    constructor.
-    Fail prove_traverse_var_is_identity.
-  Abort.
-End anonymous_traverse.
+Instance TraverseIdentifiesVar_term : @TraverseIdentifiesVar term _ _.
+Proof.
+  constructor.
+  prove_traverse_identifies_var.
+Qed.
+
+Instance TraverseVarIsIdentity_term : @TraverseVarIsIdentity term _ term _.
+Proof.
+  constructor.
+  Fail prove_traverse_var_is_identity.
+Abort.
