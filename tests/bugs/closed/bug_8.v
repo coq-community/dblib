@@ -48,9 +48,9 @@ Module named_traverse.
   Qed.
 End named_traverse.
 
-(* ************************************** *)
-(* Defining [traverse] as anonymous fails *)
-(* ************************************** *)
+(* ******************************************** *)
+(* Defining [traverse] as anonymous SHOULD work *)
+(* ******************************************** *)
 
 Module anonymous_traverse.
   Inductive term : Set :=
@@ -77,13 +77,13 @@ Module anonymous_traverse.
 
   Lemma Traverse_term_functorial : @TraverseFunctorial term _ term _.
     constructor.
-    Fail prove_traverse_functorial.
-  Abort.
+    prove_traverse_functorial.
+  Qed.
 
   Instance TraverseRelative_term : @TraverseRelative term term _.
     constructor.
-    Fail prove_traverse_relative.
-  Abort.
+    prove_traverse_relative.
+  Qed.
 
   Instance TraverseIdentifiesVar_term : @TraverseIdentifiesVar term _ _.
     constructor.
@@ -92,6 +92,6 @@ Module anonymous_traverse.
 
   Instance TraverseVarIsIdentity_term : @TraverseVarIsIdentity term _ term _.
     constructor.
-    Fail prove_traverse_var_is_identity.
-  Abort.
+    prove_traverse_var_is_identity.
+  Qed.
 End anonymous_traverse.

@@ -1508,43 +1508,16 @@ Ltac prove_traverse_var_injective :=
 
 Ltac prove_traverse_functorial :=
   let t := fresh "t" in
-  intros ? ? t; induction t; intros;
-  (* We do not use [simpl] because it is too brutal. We just want to unfold
-     the definition of [traverse], exposing a call to the user's [_traverse],
-     and then perform one step of reduction, exploiting the user's definition
-     of [_traverse] as a Fixpoint. *)
-  simpl (@traverse _ _ _) at 1 2 3; (* not 4! *)
-  match goal with |- ?_traverse _ _ (?_traverse _ _ _) = ?_traverse _ _ _ =>
-    unfold _traverse; fold _traverse
-  end;
+  intros ? ? t; induction t; intros; simpl;
   f_equal; eauto using @traverse_functorial with typeclass_instances.
 
 Ltac prove_traverse_relative :=
   let t := fresh "t" in
-  intros ? ? ? t; induction t; intros; subst;
-  (* We do not use [simpl] because it is too brutal. We just want to unfold
-     the definition of [traverse], exposing a call to the user's [_traverse],
-     and then perform one step of reduction, exploiting the user's definition
-     of [_traverse] as a Fixpoint. Once we have done that, we do not want to
-     simplify further -- in particular, if the right-hand side of the user's
-     Fixpoint contains occurrences of [traverse], we do not want to unfold
-     them. *)
-  simpl (@traverse _ _ _);
-  match goal with |- ?_traverse _ _ _ = ?_traverse _ _ _ =>
-    unfold _traverse; fold _traverse
-  end;
+  intros ? ? ? t; induction t; intros; subst; simpl;
   eauto using @traverse_relative with f_equal lia typeclass_instances.
 
 Ltac prove_traverse_var_is_identity :=
-  intros ? ? t; induction t; intros;
-  (* We do not use [simpl] because it is too brutal. We just want to unfold
-     the definition of [traverse], exposing a call to the user's [_traverse],
-     and then perform one step of reduction, exploiting the user's definition
-     of [_traverse] as a Fixpoint. *)
-  simpl (@traverse _ _ _);
-  match goal with |- ?_traverse _ _ _ = _ =>
-    unfold _traverse; fold _traverse
-  end;
+  intros ? ? t; induction t; intros; simpl;
   f_equal; eauto using @traverse_var_is_identity with typeclass_instances.
 
 (* ------------------------------------------------------------------------------ *)
