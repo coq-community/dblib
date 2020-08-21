@@ -53,7 +53,7 @@ FAIL = >&2 echo 'FAILED    $@'
 #######################################################################
 
 BUGS := bugs/opened bugs/closed
-VSUBSYSTEMS := $(BUGS) success
+VSUBSYSTEMS := $(BUGS) success failure
 
 # All subsystems
 SUBSYSTEMS := $(VSUBSYSTEMS)
@@ -85,7 +85,7 @@ $(foreach S,$(VSUBSYSTEMS),$(eval $(call vdeps,$(S))))
 # Summary
 #######################################################################
 
-summary_dir = echo $(1); find $(2) -name '*.log' -print0 | xargs -0 -n 1 tail -n1 | sort
+summary_dir = echo $(1); [ ! -x $(2) ] || find $(2) -name '*.log' -print0 | xargs -0 -n 1 tail -n1 | sort
 
 .PHONY: report summary.log
 
@@ -96,6 +96,8 @@ summary.log:
 	$(SHOW) BUILDING SUMMARY FILE
 	@{ \
 	  $(call summary_dir, "Bugs tests", bugs); \
+	  $(call summary_dir, "Success tests", success); \
+	  $(call summary_dir, "Failure tests", failure); \
 	  nb_success=`find . -name '*.log' -exec tail -n2 '{}' \; | grep -e $(log_success) -e $(log_warning) | wc -l`; \
 	  nb_failure=`find . -name '*.log' -exec tail -n2 '{}' \; | grep -e $(log_failure) | wc -l`; \
 	  nb_tests=`expr $$nb_success + $$nb_failure`; \
