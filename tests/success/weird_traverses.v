@@ -1,7 +1,5 @@
 Require Import ssreflect.
 
-Require Import Hammer.Tactics.Tactics.
-
 From Dblib Require Import DeBruijn.
 
 Module weird_traverse1.
