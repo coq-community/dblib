@@ -53,7 +53,7 @@ FAIL = >&2 echo 'FAILED    $@'
 #######################################################################
 
 BUGS := bugs/opened bugs/closed
-VSUBSYSTEMS := $(BUGS)
+VSUBSYSTEMS := $(BUGS) success
 
 # All subsystems
 SUBSYSTEMS := $(VSUBSYSTEMS)
@@ -158,7 +158,7 @@ $(addsuffix .log,$(wildcard bugs/closed/*.v)): %.v.log: %.v $(PREREQUISITES)
 #######################################################################
 
 # Success tests
-$(addsuffix .log,$(wildcard ssr/*.v success/*.v micromega/*.v modules/*.v primitive/*/*.v ltac2/*.v)): %.v.log: %.v $(PREREQUISITES)
+$(addsuffix .log,$(wildcard success/*.v)): %.v.log: %.v $(PREREQUISITES)
 	@echo "TEST      $< $(call get_coq_prog_args_in_parens,"$<")"
 	$(HIDE){ \
 	  opts="$(if $(findstring modules/,$<),-R modules Mods)"; \
