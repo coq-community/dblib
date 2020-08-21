@@ -524,7 +524,7 @@ Lemma map_map_fuse:
 Proof.
   induction e; intros;
     try match goal with o: option _ |- _ => destruct o end;
-    simpl; eauto with f_equal.
+    simpl; eauto with logic.
 Qed.
 
 Lemma map_map_exchange:
@@ -534,7 +534,7 @@ Lemma map_map_exchange:
 Proof.
   induction e; intros;
     try match goal with o: option _ |- _ => destruct o end;
-    simpl; eauto with f_equal.
+    simpl; eauto with logic.
 Qed.
 
 Lemma map_lift_map_lift:
@@ -566,7 +566,7 @@ Lemma map_map_vanish:
 Proof.
   induction e; intros;
     try match goal with o: option _ |- _ => destruct o end;
-    simpl; eauto with f_equal.
+    simpl; eauto with logic.
 Qed.
 
 (* ---------------------------------------------------------------------------- *)
@@ -1124,7 +1124,7 @@ Proof.
   induction n; intros; subst; destruct e2; simpl in *; try discriminate; auto.
 - rewrite insert_insert by lia.
   erewrite <- (IHn (1 + x)) by first [ congruence | eauto ].
-  eauto with f_equal lia.
+  eauto with logic lia.
 Qed.
 
 Lemma concat_app:
