@@ -75,7 +75,7 @@ Module anonymous_traverse.
     prove_traverse_var_injective.
   Qed.
 
-  Lemma Traverse_term_functorial : @TraverseFunctorial term _ term _.
+  Instance Traverse_term_functorial : @TraverseFunctorial term _ term _.
     constructor.
     prove_traverse_functorial.
   Qed.
