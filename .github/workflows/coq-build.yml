@@ -15,6 +15,7 @@ jobs:
       fail-fast: false
 
     steps:
+      - run: swapoff
       - uses: actions/checkout@v2
       - uses: coq-community/docker-coq-action@v1
         with:
