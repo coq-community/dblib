@@ -7,16 +7,18 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        coq: ['dev', '8.12', '8.11', '8.10', '8.9', '8.8', '8.7']
+        coq: ['dev', '8.12']
         ocaml: ['4.09-flambda', '4.07-flambda', 'minimal']
-        exclude:
-          - coq: '8.7'
-            ocaml: '4.09-flambda'
+        # exclude:
+        #   - coq: '8.7'
+        #     ocaml: '4.09-flambda'
       fail-fast: false
 
     steps:
       - run: sudo swapoff -av
       - uses: actions/checkout@v2
+      - run: sudo apt update && sudo apt install tree
+      - run: tree -a
       - uses: coq-community/docker-coq-action@v1
         with:
           opam_file: 'coq-dblib.opam'
@@ -41,3 +43,4 @@ jobs:
             startGroup Uninstallation test
               opam remove $PACKAGE
             endGroup
+      - run: tree -a
