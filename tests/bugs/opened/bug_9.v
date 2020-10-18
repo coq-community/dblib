@@ -34,17 +34,20 @@ Module weird_traverse1.
   Instance TraverseVarInjective_term : @TraverseVarInjective term _ term _.
     constructor.
     prove_traverse_var_injective.
-  Qed.
+  Fail Qed.
+  Abort.
 
   Instance Traverse_term_functorial : @TraverseFunctorial term _ term _.
     constructor.
     prove_traverse_functorial.
-  Qed.
+  Fail Qed.
+  Abort.
 
   Instance TraverseRelative_term : @TraverseRelative term term _.
     constructor.
     prove_traverse_relative.
-  Qed.
+  Fail Qed.
+  Abort.
 
   Instance TraverseIdentifiesVar_term : @TraverseIdentifiesVar term _ _.
     constructor.
@@ -54,5 +57,6 @@ Module weird_traverse1.
   Instance TraverseVarIsIdentity_term : @TraverseVarIsIdentity term _ term _.
     constructor.
     prove_traverse_var_is_identity.
-  Qed.
+  Fail Qed.
+  Abort.
 End weird_traverse1.

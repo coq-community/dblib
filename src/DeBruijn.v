@@ -1497,32 +1497,28 @@ Ltac prove_traverse_var_injective :=
   let t1 := fresh "t1" in
   intros ? ? t1; induction t1;
   let t2 := fresh "t2" in
-  intro t2; destruct t2; cbn;
+  intro t2; destruct t2; simpl;
   let h := fresh "h" in
   intros ? h; inversion h;
   f_equal;
-  eauto using @traverse_var_injective with typeclass_instances;
-  firstorder;
-  try congruence.
+  eauto using @traverse_var_injective with typeclass_instances.
   (* The lemma [traverse_var_injective] can be useful if the [traverse]
      function at hand calls another [traverse] function which has already
      been proved injective. *)
 
 Ltac prove_traverse_functorial :=
   let t := fresh "t" in
-  intros ? ? t; induction t; intros; cbn;
-  f_equal; eauto using @traverse_functorial with typeclass_instances;
-  firstorder.
+  intros ? ? t; induction t; intros; simpl;
+  f_equal; eauto using @traverse_functorial with typeclass_instances.
 
 Ltac prove_traverse_relative :=
   let t := fresh "t" in
-  intros ? ? ? t; induction t; intros; subst; cbn;
-  eauto using @traverse_relative with logic lia typeclass_instances.
+  intros ? ? ? t; induction t; intros; subst; simpl;
+  eauto using @traverse_relative with f_equal lia typeclass_instances.
 
 Ltac prove_traverse_var_is_identity :=
-  intros ? ? t; induction t; intros; cbn;
-  f_equal; eauto using @traverse_var_is_identity with typeclass_instances;
-  firstorder.
+  intros ? ? t; induction t; intros; simpl;
+  f_equal; eauto using @traverse_var_is_identity with typeclass_instances.
 
 (* ------------------------------------------------------------------------------ *)
 
