@@ -3,10 +3,9 @@ Require Import Compare_dec.
 Require Import Peano_dec.
 Require Import Lia.
 
-(* Logical hints *)
+(* A hint for invoking [f_equal] as part of [eauto] search. *)
 
-Hint Extern 1 => f_equal : logic.
-Hint Extern 3 => firstorder : logic.
+Hint Extern 1 => f_equal : f_equal.
 
 (* Hints for invoking omega on arithmetic subgoals. *)
 
