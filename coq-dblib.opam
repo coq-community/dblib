@@ -1,51 +1,32 @@
 opam-version: "2.0"
-maintainer: "Kevin Orr <kevinorr54@gmail.com>"
+maintainer: "palmskog@gmail.com"
 version: "dev"
 
 homepage: "https://github.com/coq-community/dblib"
 dev-repo: "git+https://github.com/coq-community/dblib.git"
 bug-reports: "https://github.com/coq-community/dblib/issues"
 license: "GPL-3.0-only"
-authors: ["François Pottier <francois.pottier@inria.fr> [http://gallium.inria.fr/~fpottier/]"]
 
-synopsis: "De Bruijn indices in Coq"
+synopsis: "Library for de Bruijn indices in Coq"
 description: """
-Dblib offers facilities for working with de Bruijn indices in Coq.
-The basic idea is as follows:
-
-1. Define the abstract syntax of terms as an inductive type
-
-2. Define a higher-order [traverse] function, which can be thought of as a
-   generic, capture-avoiding substitution (CAS) function. By defining
-   [traverse], you effectively define the binding structure of terms
-
-3. Prove that [traverse] is well-behaved, i.e., it satisfies half a dozen
-   reasonable properties. These proofs are usually trivial, because Dblib
-   provides tailor-made tactics for this purpose
-
-4. Dblib defines weakening ([lift]) and substitution ([subst]) in terms of
-   [traverse], and proves a rather large number of properties of these functions
-
-Everything is based on type classes: traverse, lift, subst, etc. are overloaded,
-so the whole process can be repeated, if desired, for another inductive type
-
-Dblib does support multiple independent namespaces: for instance, it is possible
-to have terms that contain term variables and types that contain type variables,
-but it is not possible to have terms that contain both term variables and type
-variables. A possible work-around is to define a single namespace of "variables"
-and to use a separate well-kindedness judgement in order to distinguish between
-"term" variables and "type" variables.
-"""
-tags: [
-  "keyword: abstract syntax"
-  "keyword: binders"
-  "keyword: de Bruijn indices"
-  "keyword: substitution"
-  "category: Computer Science/Lambda Calculi"
-]
+Library with facilities for working with de Bruijn indices in Coq to
+reason about capture-avoiding substitution of variables in syntax with binders."""
 
 build: [make "-j%{jobs}%"]
 run-test: [make "tests"]
 install: [make "install"]
-remove: [make "uninstall"]
-depends: ["coq" {>= "8.7" & < "8.13~" | = "dev"}]
+depends: [
+  "coq" {(>= "8.7" & < "8.13~") | (= "dev")}
+]
+
+tags: [
+  "category:Computer Science/Lambda Calculi"
+  "keyword:abstract syntax"
+  "keyword:binders"
+  "keyword:de Bruijn indices"
+  "keyword:substitution"
+  "logpath:Dblib"
+]
+authors: [
+  "François Pottier"
+]
