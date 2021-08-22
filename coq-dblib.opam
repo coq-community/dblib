@@ -12,11 +12,11 @@ description: """
 Library with facilities for working with de Bruijn indices in Coq to
 reason about capture-avoiding substitution of variables in syntax with binders."""
 
-build: [make "-j%{jobs}%"]
+build: [make "-j%{jobs}%" ]
 run-test: [make "tests"]
 install: [make "install"]
 depends: [
-  "coq" {(>= "8.7" & < "8.13~") | (= "dev")}
+  "coq" {(>= "8.7" & < "8.15~") | (= "dev")}
 ]
 
 tags: [
