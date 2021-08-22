@@ -1,5 +1,8 @@
 -Q src Dblib
 
+-arg -w -arg -deprecated-hint-without-locality
+-arg -w -arg -deprecated-instance-without-locality
+
 src/DblibTactics.v
 src/DeBruijn.v
 src/DemoExplicitSystemF.v
