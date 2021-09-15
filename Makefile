@@ -1,7 +1,7 @@
 all: Makefile.coq
 	@+$(MAKE) -f Makefile.coq all
 
-tests:
+tests: all
 	@+$(MAKE) -C tests
 
 clean: Makefile.coq
