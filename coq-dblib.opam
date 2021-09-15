@@ -16,7 +16,7 @@ build: [make "-j%{jobs}%" ]
 run-test: [make "tests"]
 install: [make "install"]
 depends: [
-  "coq" {(>= "8.7" & < "8.15~") | (= "dev")}
+  "coq" {(>= "8.12" & < "8.15~") | (= "dev")}
 ]
 
 tags: [
