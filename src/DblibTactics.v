@@ -5,17 +5,21 @@ Require Import Lia.
 
 (* A hint for invoking [f_equal] as part of [eauto] search. *)
 
-Hint Extern 1 => f_equal : f_equal.
+Create HintDb f_equal.
+
+#[export] Hint Extern 2 => f_equal : f_equal.
 
 (* Hints for invoking omega on arithmetic subgoals. *)
 
-Hint Extern 1 (_ = _ :> nat) => reflexivity : lia.
-Hint Extern 3 (_ = _ :> nat) => lia : lia.
-Hint Extern 3 (_ <> _ :> nat) => lia : lia.
-Hint Extern 3 (_ < _) => lia : lia.
-Hint Extern 3 (_ > _) => lia : lia.
-Hint Extern 3 (_ <= _) => lia : lia.
-Hint Extern 3 (_ >= _) => lia : lia.
+Create HintDb lia.
+
+#[export] Hint Extern 1 (_ = _ :> nat) => reflexivity : lia.
+#[export] Hint Extern 3 (_ = _ :> nat) => lia : lia.
+#[export] Hint Extern 3 (_ <> _ :> nat) => lia : lia.
+#[export] Hint Extern 3 (_ < _) => lia : lia.
+#[export] Hint Extern 3 (_ > _) => lia : lia.
+#[export] Hint Extern 3 (_ <= _) => lia : lia.
+#[export] Hint Extern 3 (_ >= _) => lia : lia.
 
 (* Dealing with integer comparisons. *)
 

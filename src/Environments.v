@@ -256,10 +256,12 @@ Ltac lookup_insert_all :=
   | rewrite lookup_shift_insert in *
   ].
 
+#[export]
 Hint Extern 1 (lookup _ (raw_insert _ _ _) = _) =>
   lookup_insert
 : lookup_insert.
 
+#[export]
 Hint Extern 1 (lookup _ _ = _) =>
   lookup_insert_all
 : lookup_insert.
@@ -361,10 +363,12 @@ Ltac insert_insert :=
   | rewrite <- insert_insert; [ reflexivity | lia ]
   ].
 
+#[export]
 Hint Extern 1 (raw_insert _ _ _ = _) =>
   insert_insert
 : insert_insert.
 
+#[export]
 Hint Extern 1 (_ = raw_insert _ _ _) =>
   insert_insert
 : insert_insert.
@@ -496,10 +500,12 @@ Ltac map_insert :=
   | rewrite <- map_insert; reflexivity
   ].
 
+#[export]
 Hint Extern 1 (map _ (insert _ _ _) = insert _ _ (map _ _)) =>
   map_insert
 : map_insert.
 
+#[export]
 Hint Extern 1 (insert _ _ (map _ _) = map _ (insert _ _ _)) =>
   map_insert
 : map_insert.
@@ -656,6 +662,7 @@ Proof.
   }
 Qed.
 
+#[export]
 Hint Resolve defined_implies_below_length : lift_idx_hints.
 
 (* The empty environment has zero length. *)
@@ -689,6 +696,7 @@ Proof.
   intros. mymax.
 Qed.
 
+#[export]
 Hint Resolve mymax_l mymax_r : mymax.
 
 (* Extending an environment increments its length by one, in the usual case.
@@ -764,8 +772,10 @@ Proof.
   intros. rewrite length_map_general. assumption.
 Qed.
 
+#[export]
 Hint Resolve length_empty length_insert length_map : length.
 
+#[export]
 Hint Resolve length_insert length_map : construction_closed.
 
 (* ---------------------------------------------------------------------------- *)
@@ -832,6 +842,7 @@ Proof.
   (apply H; lia) || reflexivity.
 Qed.
 
+#[export]
 Hint Resolve defined_implies_below_length agree_below agree_empty_left
 agree_empty_right agree_insert : agree.
 
@@ -1053,6 +1064,7 @@ Section Subsume.
 
 End Subsume.
 
+#[export]
 Hint Resolve osub_reflexive osub_Some_Some subsume_reflexive
 subsume_transitive subsume_empty subsume_insert subsume_map : subsume.
 
@@ -1095,6 +1107,7 @@ Proof.
   - eauto using length_insert, lia_hint_1 with lia.
 Qed.
 
+#[export]
 Hint Resolve length_concat : length construction_closed.
 
 (* If [e1] and [e2] agree up to depth [k], then, after extending them
@@ -1111,6 +1124,7 @@ Proof.
   - eauto using agree_insert with lia.
 Qed.
 
+#[export]
 Hint Resolve agree_concat : agree.
 
 (* Concatenation and insertion commute. *)
@@ -1175,6 +1189,7 @@ Proof.
   intros. simpl. eauto using insert_concat, length_replicate.
 Qed.
 
+#[export]
 Hint Resolve insert_concat length_replicate insert_concat_replicate
 concat_replicate_is_iterated_insert : insert_concat.
 
@@ -1189,6 +1204,7 @@ Proof.
   intros. eapply length_concat. eauto. rewrite length_replicate. eauto.
 Qed.
 
+#[export]
 Hint Resolve length_concat_replicate : length construction_closed.
 
 (* ---------------------------------------------------------------------------- *)
