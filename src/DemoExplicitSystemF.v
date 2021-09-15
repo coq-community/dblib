@@ -189,6 +189,7 @@ Inductive j : env ty -> term -> ty -> Prop :=
       subst U 0 T = U' -> 
       j E (TTyApp t) U'.
 
+#[local]
 Hint Constructors j : j.
 
 (* ---------------------------------------------------------------------------- *)
@@ -273,4 +274,3 @@ Proof.
   j_inversion.
   eauto using type_substitution, map_map_vanish with subst_lift.
 Qed.
-

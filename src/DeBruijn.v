@@ -512,6 +512,7 @@ Ltac lift_idx :=
   first [ rewrite @lift_idx_recent by solve [ lia | eauto with lift_idx_hints ]
         | rewrite @lift_idx_old by lia ].
 
+#[export]
 Hint Extern 1 => lift_idx : lift_idx.
 
 Ltac lift_idx_in h :=
@@ -746,7 +747,9 @@ Ltac simpl_lift_goal :=
   (* if this exposes uses of [var], replace them with the user's [TVar] constructor *)
   simpl var.
 
+#[export]
 Hint Extern 1 (lift _ _ _ = _) => simpl_lift_goal : simpl_lift_goal.
+#[export]
 Hint Extern 1 (_ = lift _ _ _) => simpl_lift_goal : simpl_lift_goal.
 
 (* This tactic attempts to simplify all occurrences of [lift] in the goal
@@ -952,7 +955,9 @@ Ltac simpl_subst_goal :=
   (* if this exposes uses of [var], replace them with the user's [TVar] constructor *)
   simpl var.
 
+#[export]
 Hint Extern 1 (subst _ _ _ = _) => simpl_subst_goal : simpl_subst_goal.
+#[export]
 Hint Extern 1 (_ = subst _ _ _) => simpl_subst_goal : simpl_subst_goal.
 
 (* This tactic attempts to simplify all occurrences of [subst] in the goal
@@ -1345,6 +1350,7 @@ Ltac inversion_closed :=
 (* The tactic solves a closedness goal by using whatever closedness
    hypotheses are available. *)
 
+#[export]
 Hint Extern 1 => f_equal : construction_closed.
   (* more hints to be added later on into this database *)
 
@@ -1366,6 +1372,7 @@ Ltac construction_closed :=
    the value [v] is [k]-closed for some [k] that is less than or equal
    to [x]. *)
 
+#[export]
 Hint Extern 1 (shift ?x ?v = ?v) =>
   solve [
     eapply closed_monotonic; [
@@ -1390,6 +1397,7 @@ Ltac shift_closed :=
    the value [v] is [k]-closed for some [k] that is less than or equal
    to [x]. *)
 
+#[export]
 Hint Extern 1 (subst ?w ?x ?v = ?v) =>
   solve [
     eapply closed_subst_invariant; [
@@ -1542,7 +1550,9 @@ Ltac lift_lift_hint :=
   | rewrite <- lift_lift by lia
   ].
 
+#[export]
 Hint Extern 1 (_ = lift _ _ (lift _ _ _)) => lift_lift_hint : lift_lift.
+#[export]
 Hint Extern 1 (lift _ _ (lift _ _ _) = _) => lift_lift_hint : lift_lift.
 
 Ltac subst_lift_hint :=
@@ -1551,9 +1561,13 @@ Ltac subst_lift_hint :=
   | rewrite subst_lift
   ].
 
+#[export]
 Hint Extern 1 (subst _ _ (lift _ _ _) = _) => subst_lift_hint : subst_lift.
+#[export]
 Hint Extern 1 (_ = subst _ _ (lift _ _ _)) => subst_lift_hint : subst_lift.
+#[export]
 Hint Extern 1 (subst _ _ _ = _) => subst_lift_hint : subst_lift.
+#[export]
 Hint Extern 1 (_ = subst _ _ _) => subst_lift_hint : subst_lift.
 
 Ltac lift_subst_hint :=
@@ -1568,12 +1582,17 @@ Ltac lift_subst_hint :=
   | rewrite <- lift_subst_2 by lia
   ].
 
+#[export]
 Hint Extern 1 (_ = lift _ _ (subst _ _ _)) => lift_subst_hint : lift_subst.
+#[export]
 Hint Extern 1 (lift _ _ (subst _ _ _) = _) => lift_subst_hint : lift_subst.
 
+#[export]
 Hint Extern 1 (_ = lift _ _ (lift _ _ (subst _ _ _))) => do 2 lift_subst_hint : lift_subst.
+#[export]
 Hint Extern 1 (lift _ _ (lift _ _ (subst _ _ _)) = _) => do 2 lift_subst_hint : lift_subst.
 
+#[export]
 Hint Extern 1
   (lift _ _ _ = subst (lift _ _ _) _ (lift _ _ _)) => lift_subst_hint : lift_subst.
 
@@ -1585,13 +1604,17 @@ Ltac subst_subst_hint :=
   | rewrite <- subst_subst by lia
   ].
 
+#[export]
 Hint Extern 1 (_ = subst _ _ (subst _ _ _)) => subst_subst_hint : subst_subst.
+#[export]
 Hint Extern 1 (subst _ _ (subst _ _ _) = _) => subst_subst_hint : subst_subst.
 
 Ltac lift_lift_fuse_hint :=
   rewrite lift_lift_fuse by lia.
 
+#[export]
 Hint Extern 1 (lift _ _ (lift _ _ _) = _) => lift_lift_fuse_hint : lift_lift_fuse.
+#[export]
 Hint Extern 1 (_ = lift _ _ (lift _ _ _)) => lift_lift_fuse_hint : lift_lift_fuse.
 
 (* ------------------------------------------------------------------------------ *)
@@ -1631,6 +1654,7 @@ Proof.
   eapply lift_lift_fuse. lia.
 Qed.
 
+#[export]
 Hint Extern 1 (lift ?wk _ _ = lift (S ?wk) _ _) =>
   eapply lift_lift_fuse_successor
 : lift_lift_fuse_successor.
@@ -1672,4 +1696,3 @@ Qed.
 
 Global Opaque lift.
 Global Opaque subst.
-

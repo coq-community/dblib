@@ -227,6 +227,7 @@ Inductive j : env ty -> term -> ty -> Prop :=
       j E t2 T1 ->
       j E (TApp t1 t2) T2.
 
+#[local]
 Hint Constructors j : j.
 
 (* ---------------------------------------------------------------------------- *)

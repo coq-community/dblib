@@ -187,6 +187,7 @@ Inductive j : nat -> env ty -> term -> ty -> Prop :=
       subst U 0 T = U' -> 
       j n E t U'.
 
+#[local]
 Hint Constructors j : j.
 
 (* ---------------------------------------------------------------------------- *)

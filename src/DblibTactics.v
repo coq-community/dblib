@@ -7,19 +7,19 @@ Require Import Lia.
 
 Create HintDb f_equal.
 
-Hint Extern 2 => f_equal : f_equal.
+#[export] Hint Extern 2 => f_equal : f_equal.
 
 (* Hints for invoking omega on arithmetic subgoals. *)
 
 Create HintDb lia.
 
-Hint Extern 1 (_ = _ :> nat) => reflexivity : lia.
-Hint Extern 3 (_ = _ :> nat) => lia : lia.
-Hint Extern 3 (_ <> _ :> nat) => lia : lia.
-Hint Extern 3 (_ < _) => lia : lia.
-Hint Extern 3 (_ > _) => lia : lia.
-Hint Extern 3 (_ <= _) => lia : lia.
-Hint Extern 3 (_ >= _) => lia : lia.
+#[export] Hint Extern 1 (_ = _ :> nat) => reflexivity : lia.
+#[export] Hint Extern 3 (_ = _ :> nat) => lia : lia.
+#[export] Hint Extern 3 (_ <> _ :> nat) => lia : lia.
+#[export] Hint Extern 3 (_ < _) => lia : lia.
+#[export] Hint Extern 3 (_ > _) => lia : lia.
+#[export] Hint Extern 3 (_ <= _) => lia : lia.
+#[export] Hint Extern 3 (_ >= _) => lia : lia.
 
 (* Dealing with integer comparisons. *)
 
